@@ -10,32 +10,39 @@ class Paintbrush {
     } 
 
 
-
+// Based on string value passed from parameters, different polygons are displayed
+//Eventual change -- Replace with illustrations
     public void addSticker(int xCord, int yCord, String sticker){
         yCord = Math.abs(yCord - 720);
         if (sticker.equals("Rock")){
-            g.setColor(new Color(64, 64, 64));
+            g.setColor(new Color(128,128,128));
             Polygon top = new Polygon();
             Polygon bottom = new Polygon();
-            top.addPoint(xCord - 20, yCord + 15);
-            top.addPoint( xCord + 10, yCord + 10);
-            top.addPoint(xCord + 8, yCord);
-            bottom.addPoint(xCord - 20, yCord + 15);
-            bottom.addPoint(xCord - 15, yCord - 10);
+            top.addPoint(xCord -20, yCord - 20);
+            top.addPoint( xCord + 5, yCord - 10);
+            top.addPoint(xCord + 12, yCord);
+            top.addPoint(xCord, yCord);
+            bottom.addPoint(xCord - 20, yCord -20);
+            bottom.addPoint(xCord - 10, yCord + 15);
+            bottom.addPoint(xCord + 8, yCord + 5);
             bottom.addPoint(xCord + 8, yCord);
+            bottom.addPoint(xCord, yCord);
             g.fillPolygon(top);
-            g.setColor(new Color(128, 128, 128));
+            g.setColor(new Color(64,64,64));
             g.fillPolygon(bottom);
         }
         else if (sticker.equals("Tree")){
+            //trunk
             g.setColor(new Color(59, 29, 0));
             g.fillRect(xCord, yCord, 20, 60);
+            //leaves at bottom
             Polygon leaves = new Polygon();
             leaves.addPoint(xCord + 40, yCord );
             leaves.addPoint(xCord - 20, yCord);
             leaves.addPoint(xCord+ 10, yCord - 120);
             g.setColor(new Color(01,32,20));
             g.fillPolygon(leaves);
+            //upper leaves
             leaves.reset();
             leaves.addPoint(xCord + 40, yCord -30);
             leaves.addPoint(xCord - 20, yCord -30);
@@ -44,12 +51,14 @@ class Paintbrush {
         }
         else if (sticker.equals("Mountain")){
             g.setColor(Color.darkGray);
+            //mtn base
             Polygon mountain = new Polygon();
             mountain.addPoint(xCord - 100, yCord + 50);
             mountain.addPoint( xCord + 100, yCord + 50);
             mountain.addPoint(xCord, yCord - 150);
             g.fillPolygon(mountain);
             mountain.reset();
+            //SNOWCAP ON MOUNTAIN
             g.setColor(Color.white);
             mountain.addPoint(xCord - 20, yCord - 110);
             mountain.addPoint(xCord, yCord - 122);
@@ -81,6 +90,20 @@ class Paintbrush {
         }
         else if (sticker.equals("Flower")){
 
+            g.setColor(Color.GREEN);
+            g.fillRect(xCord + 3, yCord, 5, 40);
+
+    // Petals
+            g.setColor(Color.PINK);
+            g.fillOval(xCord - 10, yCord - 10, 20, 20);
+            g.fillOval(xCord + 5, yCord - 10, 20, 20);
+            g.fillOval(xCord - 10, yCord + 5, 20, 20);
+            g.fillOval(xCord + 5, yCord + 5, 20, 20);
+
+    // Center
+            g.setColor(Color.YELLOW);
+            g.fillOval(xCord, yCord, 10, 10);
+
         } else {
 
         }
@@ -102,8 +125,8 @@ class Paintbrush {
 
     public void setBackground(){
         g.setColor(new Color(61, 61, 144));
-        g.fillRect(0, 0, 1080, 720);
+        g.fillRect(0, 0, 1080, 720);        //Defines sky backdrop
         g.setColor(new Color(0,78,24));
-        g.fillRect(0, 590, 1080, 130);
+        g.fillRect(0, 590, 1080, 130);      //Defines the grass
     }
 }

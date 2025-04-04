@@ -9,23 +9,37 @@ public class App{
         JPanel topTray = new JPanel();
         JButton enterButton = new JButton("Enter");
         JSlider xCord = new JSlider(0, 1080);
-        JSlider yCord = new JSlider(0, 680);
+        JSlider yCord = new JSlider(0, 720);
         String[] stickersList = {"Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
         JComboBox<String> selectSticker = new JComboBox<>(stickersList);
 
+        //
+        //Properties for combobox and button
+        //
         enterButton.setFont(new Font("Calibri light", Font.BOLD, 14));
         enterButton.setBackground(Color.white);
         enterButton.setBounds(window.getWidth() - 50, 10, 100, 30 );
         
-
         selectSticker.setFont(new Font("Calibri light", Font.BOLD, 14));
         
-
+        //
+        // Sets the properties for (x,y) sliders
+        //
         xCord.setBackground(new Color(50, 45, 49));
+        xCord.setForeground(Color.red);
+        xCord.setMajorTickSpacing((1080 / 10));
+        xCord.setMinorTickSpacing((1080 / 30));
+        xCord.setPaintTicks(true);
+
         yCord.setBackground(new Color(50, 45, 49));
+        yCord.setForeground(Color.red);
+        yCord.setMajorTickSpacing(720/10);
+        yCord.setMinorTickSpacing(720/30);
+        yCord.setPaintTicks(true);
 
         topTray.setBackground(new Color(50, 45, 49));
         topTray.setPreferredSize(new Dimension(window.getWidth(), 40));
+        topTray.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 7));
         topTray.add(selectSticker);
         topTray.add(xCord);
         topTray.add(yCord);
