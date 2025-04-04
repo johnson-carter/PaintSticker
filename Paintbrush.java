@@ -123,10 +123,10 @@ class Paintbrush {
 
 
 
-    public void setBackground(){
+    public void setBackground(int width, int height){
         g.setColor(new Color(61, 61, 144));
-        g.fillRect(0, 0, 1080, 720);        //Defines sky backdrop
+        g.fillRect(0, 0, width, height);        //Defines sky backdrop
         g.setColor(new Color(0,78,24));
-        g.fillRect(0, 590, 1080, 130);      //Defines the grass
+        g.fillRect(0, height - 200, width, Math.abs(200 - height));      //Defines the grass
     }
 }

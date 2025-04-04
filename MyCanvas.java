@@ -17,10 +17,9 @@ class MyCanvas extends JPanel{
     }
     
     public void resetList(){
-        for(Sticker item : items){
-            items.remove(item);
-        }
+        items.clear();
     }
+    
 
     public MyCanvas(){
         setPreferredSize(new Dimension(1080, 720));
@@ -30,8 +29,10 @@ class MyCanvas extends JPanel{
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
+        int height = 1200;
+        int width = 800;
         Paintbrush myBrush = new Paintbrush(g);
-        myBrush.setBackground();
+        myBrush.setBackground(height, width);
         for (Sticker item : items){
             myBrush.addSticker(item.getXval(), item.getYval(), item.getSticker());
         }
