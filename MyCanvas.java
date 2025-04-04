@@ -16,6 +16,11 @@ class MyCanvas extends JPanel{
         items.add(new Sticker(sticker, xCord, yCord));
     }
     
+    public void resetList(){
+        for(Sticker item : items){
+            items.remove(item);
+        }
+    }
 
     public MyCanvas(){
         setPreferredSize(new Dimension(1080, 720));

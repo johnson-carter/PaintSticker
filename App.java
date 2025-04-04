@@ -7,7 +7,8 @@ public class App{
         JFrame window = new JFrame("PaintSticker");
         MyCanvas canvas = new MyCanvas();
         JPanel topTray = new JPanel();
-        JButton enterButton = new JButton("Enter");
+        JButton enterButton = new JButton("ADD");
+        JButton resetButton = new JButton("DELETE");
         JSlider xCord = new JSlider(0, 1080);
         JSlider yCord = new JSlider(0, 720);
         String[] stickersList = {"Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
@@ -16,11 +17,16 @@ public class App{
         //
         //Properties for combobox and button
         //
-        enterButton.setFont(new Font("Calibri light", Font.BOLD, 14));
+        enterButton.setFont(new Font("Berlin Sans FB", Font.BOLD, 15));
         enterButton.setBackground(Color.white);
+        enterButton.setForeground(new Color(20, 80, 30));
         enterButton.setBounds(window.getWidth() - 50, 10, 100, 30 );
-        
-        selectSticker.setFont(new Font("Calibri light", Font.BOLD, 14));
+
+        resetButton.setFont(new Font("Berlin Sans FB", Font.BOLD, 15));
+        resetButton.setBackground(Color.white);
+        resetButton.setForeground(new Color(50, 20, 20));
+        resetButton.setBounds(window.getWidth() - 50, 10, 100, 30 );
+        selectSticker.setFont(new Font("Arial Rounded", Font.BOLD, 15));
         
         //
         // Sets the properties for (x,y) sliders
@@ -39,11 +45,12 @@ public class App{
 
         topTray.setBackground(new Color(50, 45, 49));
         topTray.setPreferredSize(new Dimension(window.getWidth(), 40));
-        topTray.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 7));
+        topTray.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 5));
         topTray.add(selectSticker);
         topTray.add(xCord);
         topTray.add(yCord);
         topTray.add(enterButton);
+        topTray.add(resetButton);
         topTray.setVisible(true);
         selectSticker.setVisible(true);
         enterButton.setVisible(true);
@@ -67,6 +74,10 @@ public class App{
  
             canvas.addItem(stickerChosen, xSlider, ySlider);
             canvas.repaint();
+        });
+        resetButton.addActionListener(e -> {
+           canvas.resetList();
+           canvas.repaint(); 
         });
         
     }
