@@ -1,22 +1,19 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 
 
 class MyCanvas extends JPanel{
-    private String sticker = "Rock";
-    private int xCord = 0;
-    private int yCord = 0;
-
-    public void setSticker(String sticker){
-        this.sticker = sticker;
-    }
-    public void setCoordinates(int xCord, int yCord){
-        this.xCord = xCord;
-        this.yCord = yCord;
+    private List<Sticker> items = new ArrayList<>();
+    
+    
+    public void addItem(String sticker, int xCord, int yCord){
+        items.add(new Sticker(sticker, xCord, yCord));
     }
     
 
@@ -30,7 +27,9 @@ class MyCanvas extends JPanel{
         super.paintComponent(g);
         Paintbrush myBrush = new Paintbrush(g);
         myBrush.setBackground();
-        
-        myBrush.addSticker(xCord, yCord, sticker);
+        for (Sticker item : items){
+            myBrush.addSticker(item.getXval(), item.getYval(), item.getSticker());
+        }
+
     }
 }

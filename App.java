@@ -51,8 +51,7 @@ public class App{
             int xSlider = xCord.getValue();
             int ySlider = yCord.getValue();
  
-            canvas.setSticker(stickerChosen);
-            canvas.setCoordinates(xSlider, ySlider);
+            canvas.addItem(stickerChosen, xSlider, ySlider);
             canvas.repaint();
         });
         
