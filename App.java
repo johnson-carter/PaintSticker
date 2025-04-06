@@ -1,36 +1,57 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 
 public class App{
 
     public static void main(String[] args) {
+
+        //Defines window and content frames
         JFrame window = new JFrame("PaintSticker");
         MyCanvas canvas = new MyCanvas();
         JPanel topTray = new JPanel();
         JPanel sideBar = new JPanel();
-        JButton enterButton = new JButton("ADD");
+        Color sysColor = new Color(50, 45, 49);
+        Color sysDark = new Color(40, 32, 39);
+        Color sysLight = new Color(240, 220, 240);
+
+        //Defines top bar components
+        ImageIcon brushIcon = new ImageIcon("images/brushIcon.png");
+        ImageIcon logoImg = new ImageIcon("images/logo.png");
+        
         JButton resetButton = new JButton("CLEAR");
-//        JTextField xIn = new JTextField("Enter X Coordinate");
-//        JTextField yIn = new JTextField("Enter Y Coordinate");
-        JSlider xCord = new JSlider(0, 1080);
-        JSlider yCord = new JSlider(0, 720);
+        JButton brush = new JButton(brushIcon);
+        brush.setSize(new Dimension(10, 20));
+        brush.setBackground(sysLight);
+
         String[] stickersList = {"SELECT A STICKER","Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
         JComboBox<String> selectSticker = new JComboBox<>(stickersList);
-        ImageIcon logoImg = new ImageIcon("images/logo.png");
-        JLabel logo = new JLabel(logoImg);
-        logo.setSize(40, 40);
-        topTray.add(logo);
-
-        
-        
         selectSticker.setFont(new Font("Arial Rounded", Font.BOLD, 15));
         
-        resetButton.setMargin(new Insets(5, 15, 5, 15));
+        JLabel logo = new JLabel(logoImg);
+        logo.setSize(40, 40);
+      
+        
+//        resetButton.setMargin(new Insets(5, 15, 5, 15));
         resetButton.setFont(new Font("Cambria", Font.BOLD, 15));
         resetButton.setBackground(Color.red);
         resetButton.setForeground(Color.white);
         resetButton.setSize(new Dimension(50, 20));
+
+        FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
+        topTray.setBackground(Color.white);
+        topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
+        topTray.setLayout(topLayout);
+        topTray.add(logo);
+        topTray.add(selectSticker);
+        /*
+        topTray.add(xCord);
+        topTray.add(yCord);
+        topTray.add(enterButton); */
+        topTray.add(resetButton);
+        topTray.add(brush);
+        topTray.setVisible(true);
 
         /*Enter Button and original coordinate sliders
         enterButton.setFont(new Font("Berlin Sans FB", Font.BOLD, 15));
@@ -51,7 +72,7 @@ public class App{
         yCord.setPaintTicks(true);
         */
 
-        sideBar.setBackground(new Color(50, 45, 49));
+        sideBar.setBackground(sysColor);
         sideBar.setPreferredSize( new Dimension(60, window.getHeight()));
         sideBar.setVisible(true);
         
@@ -59,28 +80,20 @@ public class App{
         
         ImageIcon newFileIcon = new ImageIcon("images/newFile.png");
         ImageIcon downloadIcon = new ImageIcon("images/download.png");
+        ImageIcon settingsIcon = new ImageIcon("images/settings.png");
         JButton newButton = new JButton(newFileIcon);
         JButton backgroundButton = new JButton(downloadIcon);
+        JButton settingButton = new JButton(settingsIcon);
         newButton.setBackground( new Color(40, 32, 39));
         backgroundButton.setBackground(new Color(40, 32, 39));
+        settingButton.setBackground(new Color(40, 32, 39));
+        settingButton.setBounds(new Rectangle(new Dimension(60,60)));
+
         sideBar.add(newButton);
         sideBar.add(backgroundButton);
+        sideBar.add(settingButton);
 
-        FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
-        topTray.setBackground(Color.white);
-        topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
-        topTray.setLayout(topLayout);
-        topTray.add(selectSticker);
-        /*
-        topTray.add(xCord);
-        topTray.add(yCord);
-        topTray.add(enterButton); */
-        topTray.add(resetButton);
-        topTray.setVisible(true);
-        selectSticker.setVisible(true);
-        enterButton.setVisible(true);
-        xCord.setVisible(true);
-        yCord.setVisible(true);
+        
         
         
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

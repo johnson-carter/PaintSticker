@@ -141,9 +141,9 @@ class Paintbrush  {
     public void setBackground(int state){
         if (state == 0){
             g.setColor(new Color(61, 61, 144));
-            g.fillRect(0, 0, 1080, 720);        //Defines sky backdrop
+            g.fillRect(0, 0, 1920, 1080);        //Defines sky backdrop
             g.setColor(new Color(0,78,24));
-            g.fillRect(0, 590, 1080, 130);      //Defines the grass
+            g.fillRect(0, 590, 1920, 490);      //Defines the grass
         }
         else if (state == 1){
             g.setColor(new Color(250, 250, 250));
