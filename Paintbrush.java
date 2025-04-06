@@ -1,10 +1,18 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.awt.Polygon;
 import java.lang.Math;
+import java.io.File;
+import java.io.IOException;
 
-class Paintbrush {
+import javax.imageio.ImageIO;
+
+
+class Paintbrush  {
     private Graphics g;
+    private BufferedImage moose;
+
     public Paintbrush(Graphics graphics){
         g = graphics;
     } 
@@ -13,7 +21,7 @@ class Paintbrush {
 // Based on string value passed from parameters, different polygons are displayed
 //Eventual change -- Replace with illustrations
     public void addSticker(int xCord, int yCord, String sticker){
-        yCord = Math.abs(yCord - 720);
+        // yCord = Math.abs(yCord - 720);
         if (sticker.equals("Rock")){
             g.setColor(new Color(128,128,128));
             Polygon top = new Polygon();
@@ -51,6 +59,7 @@ class Paintbrush {
         }
         else if (sticker.equals("Mountain")){
             g.setColor(Color.darkGray);
+            System.out.println("X: " + xCord + " .  Y: " + yCord);
             //mtn base
             Polygon mountain = new Polygon();
             mountain.addPoint(xCord - 100, yCord + 50);
@@ -83,10 +92,16 @@ class Paintbrush {
 
         }
         else if (sticker.equals("Moose")){
-            g.setColor(new Color(59, 29, 0));
-            g.fillRect(xCord - 80, yCord + 35, 80, 35);
-            g.setColor(Color.lightGray);
-            g.fillRect(xCord - 15, yCord + 5, 30, 18);
+            try {
+                moose = ImageIO.read(new File("moose.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(moose != null){
+                g.drawImage(moose, xCord - 100, yCord - 80, 300,200, null);
+            } else {
+                g.drawString("No image found", xCord, yCord);
+            }
         }
         else if (sticker.equals("Flower")){
 

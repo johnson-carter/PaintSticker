@@ -1,18 +1,21 @@
 import java.awt.*;
 import javax.swing.*;
 
+
 public class App{
-    
     public static void main(String[] args) {
         JFrame window = new JFrame("PaintSticker");
         MyCanvas canvas = new MyCanvas();
         JPanel topTray = new JPanel();
         JButton enterButton = new JButton("ADD");
         JButton resetButton = new JButton("DELETE");
+//        JTextField xIn = new JTextField("Enter X Coordinate");
+//        JTextField yIn = new JTextField("Enter Y Coordinate");
         JSlider xCord = new JSlider(0, 1080);
         JSlider yCord = new JSlider(0, 720);
         String[] stickersList = {"Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
         JComboBox<String> selectSticker = new JComboBox<>(stickersList);
+        
 
         //
         //Properties for combobox and button
@@ -67,6 +70,7 @@ public class App{
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         
+        /* 
         enterButton.addActionListener(e -> {
             String stickerChosen = (String) selectSticker.getSelectedItem();
             int xSlider = xCord.getValue();
@@ -75,6 +79,14 @@ public class App{
             canvas.addItem(stickerChosen, xSlider, ySlider);
             canvas.repaint();
         });
+        */
+        selectSticker.addActionListener(e -> {
+            String stickerChosen = (String) selectSticker.getSelectedItem();
+            canvas.addItem(stickerChosen);
+            System.out.println("Select sticker called");
+        });
+
+
         resetButton.addActionListener(e -> {
            canvas.resetList();
            canvas.repaint(); 
