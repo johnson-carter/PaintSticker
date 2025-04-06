@@ -32,6 +32,7 @@ class MyCanvas extends JPanel{
     public void setCanvasState(int state){
         this.state = state;
     }
+    
 
     public MyCanvas(){
         setPreferredSize(new Dimension(1080, 720));
@@ -52,6 +53,8 @@ class MyCanvas extends JPanel{
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
+        //int height = 1200;
+        //int width = 800;
         Paintbrush myBrush = new Paintbrush(g);
         myBrush.setBackground(state);
         for (Sticker item : items){
