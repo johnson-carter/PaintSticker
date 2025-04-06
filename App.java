@@ -3,37 +3,41 @@ import javax.swing.*;
 
 
 public class App{
+
     public static void main(String[] args) {
         JFrame window = new JFrame("PaintSticker");
         MyCanvas canvas = new MyCanvas();
         JPanel topTray = new JPanel();
+        JPanel sideBar = new JPanel();
         JButton enterButton = new JButton("ADD");
-        JButton resetButton = new JButton("DELETE");
+        JButton resetButton = new JButton("CLEAR");
 //        JTextField xIn = new JTextField("Enter X Coordinate");
 //        JTextField yIn = new JTextField("Enter Y Coordinate");
         JSlider xCord = new JSlider(0, 1080);
         JSlider yCord = new JSlider(0, 720);
-        String[] stickersList = {"Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
+        String[] stickersList = {"SELECT A STICKER","Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
         JComboBox<String> selectSticker = new JComboBox<>(stickersList);
-        
+        ImageIcon logoImg = new ImageIcon("images/logo.png");
+        JLabel logo = new JLabel(logoImg);
+        logo.setSize(40, 40);
+        topTray.add(logo);
 
-        //
-        //Properties for combobox and button
-        //
+        
+        
+        selectSticker.setFont(new Font("Arial Rounded", Font.BOLD, 15));
+        
+        resetButton.setMargin(new Insets(5, 15, 5, 15));
+        resetButton.setFont(new Font("Cambria", Font.BOLD, 15));
+        resetButton.setBackground(Color.red);
+        resetButton.setForeground(Color.white);
+        resetButton.setSize(new Dimension(50, 20));
+
+        /*Enter Button and original coordinate sliders
         enterButton.setFont(new Font("Berlin Sans FB", Font.BOLD, 15));
         enterButton.setBackground(Color.white);
         enterButton.setForeground(new Color(20, 80, 30));
         enterButton.setBounds(window.getWidth() - 50, 10, 100, 30 );
 
-        resetButton.setFont(new Font("Berlin Sans FB", Font.BOLD, 15));
-        resetButton.setBackground(Color.white);
-        resetButton.setForeground(new Color(50, 20, 20));
-        resetButton.setBounds(window.getWidth() - 50, 10, 100, 30 );
-        selectSticker.setFont(new Font("Arial Rounded", Font.BOLD, 15));
-        
-        //
-        // Sets the properties for (x,y) sliders
-        //
         xCord.setBackground(new Color(50, 45, 49));
         xCord.setForeground(Color.red);
         xCord.setMajorTickSpacing((1080 / 10));
@@ -45,14 +49,32 @@ public class App{
         yCord.setMajorTickSpacing(720/10);
         yCord.setMinorTickSpacing(720/30);
         yCord.setPaintTicks(true);
+        */
 
-        topTray.setBackground(new Color(50, 45, 49));
-        topTray.setPreferredSize(new Dimension(window.getWidth(), 40));
-        topTray.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 5));
+        sideBar.setBackground(new Color(50, 45, 49));
+        sideBar.setPreferredSize( new Dimension(60, window.getHeight()));
+        sideBar.setVisible(true);
+        
+        //Sidebar components: 
+        
+        ImageIcon newFileIcon = new ImageIcon("images/newFile.png");
+        ImageIcon downloadIcon = new ImageIcon("images/download.png");
+        JButton newButton = new JButton(newFileIcon);
+        JButton backgroundButton = new JButton(downloadIcon);
+        newButton.setBackground( new Color(40, 32, 39));
+        backgroundButton.setBackground(new Color(40, 32, 39));
+        sideBar.add(newButton);
+        sideBar.add(backgroundButton);
+
+        FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
+        topTray.setBackground(Color.white);
+        topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
+        topTray.setLayout(topLayout);
         topTray.add(selectSticker);
+        /*
         topTray.add(xCord);
         topTray.add(yCord);
-        topTray.add(enterButton);
+        topTray.add(enterButton); */
         topTray.add(resetButton);
         topTray.setVisible(true);
         selectSticker.setVisible(true);
@@ -63,10 +85,12 @@ public class App{
         
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.add(canvas);
+        window.add(sideBar, BorderLayout.WEST);
         window.add(topTray, BorderLayout.NORTH);
         window.pack();
         window.setBackground(new Color(61,61,144));
-        window.setResizable(false);
+        window.setResizable(true);
+        window.setMinimumSize(new Dimension(1000, 500));
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         
@@ -89,9 +113,17 @@ public class App{
 
         resetButton.addActionListener(e -> {
            canvas.resetList();
+           canvas.setCanvasState(0);
            canvas.repaint(); 
         });
         
+        newButton.addActionListener(e -> {
+            canvas.resetList();
+            canvas.setCanvasState(1);
+            canvas.repaint();
+        });
+
+
     }
     
 }

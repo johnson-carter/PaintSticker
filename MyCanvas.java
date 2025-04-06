@@ -14,6 +14,7 @@ class MyCanvas extends JPanel{
     private List<Sticker> items = new ArrayList<>();
     private int x = 0;
     private int y = 0;
+    private int state = 0;
     private String stickerUnderstood;
 
     public void addItem(String sticker, int xCord, int yCord){
@@ -26,6 +27,10 @@ class MyCanvas extends JPanel{
     
     public void resetList(){
         items.clear();
+    }
+
+    public void setCanvasState(int state){
+        this.state = state;
     }
 
     public MyCanvas(){
@@ -48,7 +53,7 @@ class MyCanvas extends JPanel{
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Paintbrush myBrush = new Paintbrush(g);
-        myBrush.setBackground();
+        myBrush.setBackground(state);
         for (Sticker item : items){
             myBrush.addSticker(item.getXval(), item.getYval(), item.getSticker());
         }

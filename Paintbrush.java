@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.Polygon;
-import java.lang.Math;
+//import java.lang.Math;
 import java.io.File;
 import java.io.IOException;
 
@@ -93,7 +93,7 @@ class Paintbrush  {
         }
         else if (sticker.equals("Moose")){
             try {
-                moose = ImageIO.read(new File("moose.png"));
+                moose = ImageIO.read(new File("images/moose.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -138,10 +138,16 @@ class Paintbrush  {
 
 
 
-    public void setBackground(){
-        g.setColor(new Color(61, 61, 144));
-        g.fillRect(0, 0, 1080, 720);        //Defines sky backdrop
-        g.setColor(new Color(0,78,24));
-        g.fillRect(0, 590, 1080, 130);      //Defines the grass
+    public void setBackground(int state){
+        if (state == 0){
+            g.setColor(new Color(61, 61, 144));
+            g.fillRect(0, 0, 1080, 720);        //Defines sky backdrop
+            g.setColor(new Color(0,78,24));
+            g.fillRect(0, 590, 1080, 130);      //Defines the grass
+        }
+        else if (state == 1){
+            g.setColor(new Color(250, 250, 250));
+            g.fillRect(0, 0, 1920, 1080);
+        }
     }
 }
