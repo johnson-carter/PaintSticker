@@ -84,11 +84,9 @@ class MyCanvas extends JPanel{
         //int width = 800;
         Paintbrush myBrush = new Paintbrush(g);
         myBrush.setBackground(state);
-        if(brushStatus ==0){
             for (Sticker item : items){
                 myBrush.addSticker(item.getXval(), item.getYval(), item.getSticker());
             }
-        } else if(brushStatus == 1){
             for(int i = 0; i < strokes.size(); ++i){
                 myBrush.startStroke(strokes.get(i).getXval(), strokes.get(i).getYval(), strokes.get(i).getColor());
                 int x1 = strokes.get(i).getXval();
@@ -108,7 +106,7 @@ class MyCanvas extends JPanel{
                             int y5 = (y1 + y3)/2;
                             myBrush.startStroke(x5, y5, colorSel);
                             myBrush.startStroke(x4, y4, colorSel);
-                        }
+                        
                     }
                 }
             }

@@ -22,12 +22,15 @@ public class App{
         ImageIcon brushIcon = new ImageIcon("images/brushIcon.png");
         ImageIcon brushHighlighted = new ImageIcon("images/brushIcon2.png");
         ImageIcon logoImg = new ImageIcon("images/logo.png");
-        
+        ImageIcon eraserIcon = new ImageIcon("images/eraser.png");
+        ImageIcon eraserHighlighted = new ImageIcon("images/eraser2.png");
+
         JButton resetButton = new JButton("CLEAR");
         JLabel toolkitLabel = new JLabel("Select Tool: ");
         JButton brush = new JButton(brushIcon);
-        JButton eraser = new JButton();
+        JButton eraser = new JButton(eraserIcon);
         brush.setPreferredSize(new Dimension(30, 30));
+        eraser.setPreferredSize(new Dimension(30, 30));
         brush.setBackground(sysLight);
 
         String[] stickersList = {"SELECT A STICKER","Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
@@ -104,7 +107,7 @@ public class App{
 
         sideBar.add(newButton);
         sideBar.add(fileButton);
-        sideBar.add(settingButton);
+        sideBar.add(settingButton, BorderLayout.SOUTH);
         settingButton.setComponentPopupMenu(settingsMenu);
 
         
@@ -147,7 +150,12 @@ public class App{
 
         brush.addActionListener(e -> {
             brush.setIcon(brushHighlighted);
+            eraser.setIcon(eraserIcon);
             canvas.setBrushMode(1);
+        });
+        eraser.addActionListener(e -> {
+            brush.setIcon(brushIcon);
+            eraser.setIcon(eraserHighlighted);
         });
         selectColor.addActionListener(e ->{
             Color colorChosen = colorSel;
