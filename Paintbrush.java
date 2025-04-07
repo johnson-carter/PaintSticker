@@ -124,6 +124,11 @@ class Paintbrush  {
         }
     }
 
+    public void startStroke(int x, int y, Color color){
+        g.setColor(color);
+        g.fillRect(x, y, 4, 4);
+        System.out.println("Stoke displayed");
+    }
 
 
 

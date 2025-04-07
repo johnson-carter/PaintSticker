@@ -1,28 +1,33 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 
 public class App{
-
+    
     public static void main(String[] args) {
 
         //Defines window and content frames
         JFrame window = new JFrame("PaintSticker");
         MyCanvas canvas = new MyCanvas();
+        //int brushStatus = 0;
         JPanel topTray = new JPanel();
         JPanel sideBar = new JPanel();
         Color sysColor = new Color(50, 45, 49);
         Color sysDark = new Color(40, 32, 39);
-        Color sysLight = new Color(240, 220, 240);
+        Color sysLight = new Color(240, 240, 240);
+        Color colorSel = Color.black;
 
         //Defines top bar components
         ImageIcon brushIcon = new ImageIcon("images/brushIcon.png");
+        ImageIcon brushHighlighted = new ImageIcon("images/brushIcon2.png");
         ImageIcon logoImg = new ImageIcon("images/logo.png");
         
         JButton resetButton = new JButton("CLEAR");
+        JLabel toolkitLabel = new JLabel("Select Tool: ");
         JButton brush = new JButton(brushIcon);
-        brush.setSize(new Dimension(10, 20));
+        JButton eraser = new JButton();
+        brush.setPreferredSize(new Dimension(30, 30));
         brush.setBackground(sysLight);
 
         String[] stickersList = {"SELECT A STICKER","Tree", "Rock", "Mountain", "Bird", "Moose", "Flower"};
@@ -31,6 +36,9 @@ public class App{
         
         JLabel logo = new JLabel(logoImg);
         logo.setSize(40, 40);
+        String[] colorsList = {"Black", "White", "Red", "Blue", "Green"};
+        JComboBox<String> selectColor = new JComboBox<>(colorsList);
+        selectColor.setFont(new Font("Arial Rounded", Font.BOLD, 15));
       
         
 //        resetButton.setMargin(new Insets(5, 15, 5, 15));
@@ -50,7 +58,10 @@ public class App{
         topTray.add(yCord);
         topTray.add(enterButton); */
         topTray.add(resetButton);
+        topTray.add(toolkitLabel);
         topTray.add(brush);
+        topTray.add(eraser);
+        topTray.add(selectColor);
         topTray.setVisible(true);
 
         /*Enter Button and original coordinate sliders
@@ -82,16 +93,19 @@ public class App{
         ImageIcon downloadIcon = new ImageIcon("images/download.png");
         ImageIcon settingsIcon = new ImageIcon("images/settings.png");
         JButton newButton = new JButton(newFileIcon);
-        JButton backgroundButton = new JButton(downloadIcon);
+        JButton fileButton = new JButton(downloadIcon);
         JButton settingButton = new JButton(settingsIcon);
+        JPopupMenu settingsMenu = new JPopupMenu("Appliication Settings");
+
         newButton.setBackground( new Color(40, 32, 39));
-        backgroundButton.setBackground(new Color(40, 32, 39));
+        fileButton.setBackground(new Color(40, 32, 39));
         settingButton.setBackground(new Color(40, 32, 39));
         settingButton.setBounds(new Rectangle(new Dimension(60,60)));
 
         sideBar.add(newButton);
-        sideBar.add(backgroundButton);
+        sideBar.add(fileButton);
         sideBar.add(settingButton);
+        settingButton.setComponentPopupMenu(settingsMenu);
 
         
         
@@ -119,6 +133,7 @@ public class App{
         */
         selectSticker.addActionListener(e -> {
             String stickerChosen = (String) selectSticker.getSelectedItem();
+            canvas.setBrushMode(0);
             canvas.addItem(stickerChosen);
             System.out.println("Select sticker called");
         });
@@ -129,11 +144,52 @@ public class App{
            canvas.setCanvasState(0);
            canvas.repaint(); 
         });
+
+        brush.addActionListener(e -> {
+            brush.setIcon(brushHighlighted);
+            canvas.setBrushMode(1);
+        });
+        selectColor.addActionListener(e ->{
+            Color colorChosen = colorSel;
+            String stickerChose = (String) selectColor.getSelectedItem();
+            if(stickerChose.equals("Red")){
+                colorChosen = Color.red;
+            } else if (stickerChose.equals("Blue")){
+                colorChosen = Color.blue;
+            } else if (stickerChose.equals("Green")){
+                colorChosen = Color.green;
+            } else if (stickerChose.equals("Black")){
+                colorChosen = Color.black;
+            } else if (stickerChose.equals("White")){
+                colorChosen = Color.white;
+            }
+            canvas.setColorChosen(colorChosen);
+        });
+
+        canvas.addMouseMotionListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e){
+                canvas.addItem(e.getX(),e.getY(), colorSel);
+                System.out.println("@ -- " + e.getX() + "/" + e.getY());
+            }
+        });
+        canvas.addMouseMotionListener(new MouseMotionAdapter() {
+           public void mouseDragged(MouseEvent e){
+                canvas.addFinal(e.getX(), e.getY());
+                System.out.println("Following: " + e.getX() + " , " + e.getY());
+           } 
+        });
+
         
         newButton.addActionListener(e -> {
             canvas.resetList();
             canvas.setCanvasState(1);
             canvas.repaint();
+        });
+        fileButton.addActionListener(e -> {
+            
+        });
+        settingButton.addActionListener(e -> {
+
         });
 
 
