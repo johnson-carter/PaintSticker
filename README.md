@@ -1,4 +1,12 @@
 # PaintSticker
-New open-source competitor to Photoshop, Paint.net, and MS Paint. Currently features 6 designs that you can place across your screen using the included (x,y) sliders. 
-New Features:
-- Added a delete button to remove the last added sticker (Press twice to confirm)
+New open-source competitor to Photoshop, Paint.net, and MS Paint. This application allows you to place stickers and draw all over your canvas. With PaintSticker the only limitation is your imagination 
+
+# Installation Instructions:
+- Step 1:
+Install the PainSticker source files.
+
+- Step 2:
+Open PaintSticker.jar file.
+
+- Step 3:
+Paint away!
