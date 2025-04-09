@@ -2,9 +2,76 @@ package src;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 
 public class App{
+
+    // Color variables - Update for new theme.
+        // Simple Light Theme
+        static Color lightSimple = new Color(240, 240, 240);
+        static Color regularSimple = new Color(200, 200, 200);
+        static Color darkSimple = new Color(150, 150, 150);
+
+        static Color accentBlue = new Color(70, 130, 180); // Steel Blue
+        static Color accentOrange = new Color(255, 165, 0); // Orange
+        static Color accentGreen = new Color(50, 205, 50); // Lime Green
+
+        // Simple Dark Theme
+        static Color lightDark = new Color(100, 100, 100);
+        static Color regularDark = new Color(60, 60, 60);
+        static Color darkDark = new Color(30, 30, 30);
+
+        static Color accentSkyBlue = new Color(135, 206, 250); // Light Sky Blue
+        static Color accentRedOrange = new Color(255, 69, 0); // Red-Orange
+        static Color accentLightGreen = new Color(144, 238, 144); // Light Green
+
+         // High Contrast Theme
+         static Color lightContrast = new Color(255, 255, 255);
+        static Color regularContrast = new Color(0, 0, 0);
+        static Color darkContrast = new Color(0, 0, 0);
+
+        static Color accentYellow = new Color(255, 255, 0); // Bright Yellow
+        static Color accentRed = new Color(255, 0, 0); // Pure Red
+        static Color accentBrightGreen = new Color(0, 255, 0); // Bright Green
+                    // TODO --- add themes, selector in settings.
+        static Color sysLight = lightDark;
+        static Color sysColor = regularDark;
+        static Color sysDark = darkDark;
+        static Color accent1 = accentSkyBlue;
+        static Color accent2 = accentRedOrange;
+        static Color accent3 = accentLightGreen;
+
+
+    public static void applyTheme(String theme){
+        if(theme.equals("Light")){
+             sysLight = lightSimple;
+             sysColor = regularSimple;
+             sysDark = regularSimple;
+             accent1 = accentBlue;
+             accent2 = accentOrange;
+            accent3 = accentGreen;
+        } else if(theme.equals("Dark")){
+             sysLight = lightDark;
+             sysColor = regularDark;
+             sysDark = darkDark;
+             accent1 = accentSkyBlue;
+             accent2 = accentRedOrange;
+             accent3 = accentLightGreen;
+        } else if(theme.equals("High-Contrast")){
+             sysLight = lightContrast;
+             sysColor = regularContrast;
+             sysDark = darkContrast;
+             accent1 = accentYellow;
+             accent2 = accentRed;
+             accent3 = accentBrightGreen;
+        }
+    }
+    public static void applyLayout(String layout){
+
+    }
     public static void main(String[] args) {
 
 
@@ -12,39 +79,39 @@ public class App{
         //Defines window and content frames
         ////////////////////////////////////
         
-        
+
         JFrame window = new JFrame("PaintSticker");
         //Custom JPanel object - see MyCanvas.Java
         MyCanvas canvas = new MyCanvas();
+        
+        //Just declared this now
+        Image scaledImage;
+        int brushMode;
+        Color colorSel = Color.black;
         
         // GUI panels
         JPanel topTray = new JPanel();
         JPanel sideBar = new JPanel();
 
-        // Color variables - Update for new theme.
-        Color sysColor = new Color(50, 45, 49);
-        Color sysDark = new Color(40, 32, 39);
-        Color sysLight = new Color(240, 240, 240);
-        Color colorSel = Color.black;
-                    // TODO --- add themes, selector in settings.
-        
         ///////////////////////////////////
         //Tookit / TopTray Components
         ///////////////////////////////////
         
+
         //PaintSticker logo
         ImageIcon logoImg = new ImageIcon("images/logo.png");
+        scaledImage = logoImg.getImage().getScaledInstance(50, 50,   0);
+        logoImg.setImage(scaledImage);
         JLabel logo = new JLabel(logoImg);
-        logo.setSize(40, 40);
         topTray.add(logo);
         
-
-        //Reset Button
-        JButton undoButton = new JButton("Undo");
-        undoButton.setFont(new Font("Cambria", Font.BOLD, 15));
-        undoButton.setBackground(Color.red);
-        undoButton.setForeground(Color.white);
-        undoButton.setSize(new Dimension(50, 20));
+        //Undo Button
+        ImageIcon undoIcon = new ImageIcon("images/undoIcon.png");
+        scaledImage = undoIcon.getImage().getScaledInstance(20, 20, 0);
+        undoIcon.setImage(scaledImage);
+        JButton undoButton = new JButton(undoIcon);
+        undoButton.setBackground(accent2);
+        undoButton.setPreferredSize(new Dimension(25, 25));
         topTray.add(undoButton);
 
         // Toolkit break
@@ -85,6 +152,12 @@ public class App{
         topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
         topTray.setLayout(topLayout);
         topTray.setVisible(true);
+        //TopTray Border
+        MatteBorder topTrayBorder = new MatteBorder(0, 0, 2, 0, Color.black);
+        EmptyBorder topTrayPadding = new EmptyBorder(00, 0, 15, 0);
+        topTray.setBorder(new CompoundBorder(topTrayBorder, topTrayPadding));
+
+        //TODO --- Add new components; shape tool?
 
         //////////////////////////////
         // SideBar & Components
@@ -92,27 +165,39 @@ public class App{
 
         //Sidebar properties
         sideBar.setBackground(sysColor);
-        sideBar.setPreferredSize( new Dimension(60, window.getHeight()));
+        sideBar.setPreferredSize( new Dimension(55, window.getHeight()));
         sideBar.setVisible(true);
+
+        int scaledImageSize = 40;
+        int sideBarButtonSize = 45;
+        Dimension sideBarButtonDimension = new Dimension(sideBarButtonSize, sideBarButtonSize);
         
         //Sidebar components: 
-        ImageIcon newFileIcon = new ImageIcon("images/newFile.png");
-        ImageIcon downloadIcon = new ImageIcon("images/download.png");
-        ImageIcon settingsIcon = new ImageIcon("images/settings.png");
-        JButton newButton = new JButton(newFileIcon);
-        JButton fileButton = new JButton(downloadIcon);
-        JButton settingButton = new JButton(settingsIcon);
-        JPopupMenu settingsMenu = new JPopupMenu("Appliication Settings");
+        ImageIcon addIcon = new ImageIcon("images/addIcon.png");
+        scaledImage = addIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
+        addIcon.setImage(scaledImage);
+        JButton newButton = new JButton(addIcon);
+        newButton.setBackground(lightDark);
+        newButton.setPreferredSize(sideBarButtonDimension);
 
-        newButton.setBackground( new Color(40, 32, 39));
-        fileButton.setBackground(new Color(40, 32, 39));
-        settingButton.setBackground(new Color(40, 32, 39));
-        settingButton.setBounds(new Rectangle(new Dimension(60,60)));
+        ImageIcon saveIcon = new ImageIcon("images/saveIcon.png");
+        scaledImage = saveIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
+        saveIcon.setImage(scaledImage);
+        JButton fileButton = new JButton(saveIcon);
+        fileButton.setBackground(lightDark);
+        fileButton.setPreferredSize(sideBarButtonDimension);
+        
+        ImageIcon settingsIcon = new ImageIcon("images/settingsIcon.png");
+        scaledImage = settingsIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
+        settingsIcon.setImage(scaledImage);
+        JButton settingButton = new JButton(settingsIcon);
+        settingButton.setBackground(lightDark);
+        settingButton.setPreferredSize(sideBarButtonDimension);
+
 
         sideBar.add(newButton);
         sideBar.add(fileButton);
         sideBar.add(settingButton, BorderLayout.SOUTH);
-        settingButton.setComponentPopupMenu(settingsMenu);
                 
         ////////////////////////////
         /// Window properties
@@ -210,7 +295,7 @@ public class App{
         /// SideBar Button Logic
         ///////////////////////////////
         
-        // ** Not yet implemented **
+        // ** Not yet implemented ** TODO --- Sidebar
 
         newButton.addActionListener(e -> {
             canvas.clearAll();
@@ -218,13 +303,20 @@ public class App{
             canvas.repaint();
         });
         fileButton.addActionListener(e -> {
-            
+            canvas.clearAll();
+            canvas.setCanvasState(0);
+            canvas.repaint();
         });
         settingButton.addActionListener(e -> {
-
+            SettingsDialog settingsDialog = new SettingsDialog(window, (theme, layout) -> {
+                System.out.println("Theme selected: " + theme);
+                System.out.println("Layout selected: " + layout);
+                
+                // 🧠 Do something with theme/layout
+                applyTheme(theme);
+                applyLayout(layout);
+            });
+            settingsDialog.setVisible(true);
         });
-
-
     }
-    
-}
+} 

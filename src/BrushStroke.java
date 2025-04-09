@@ -1,6 +1,12 @@
 package src;
 import java.awt.Color;
 
+/*
+ *      This class is responsible for creating an object capable of storing
+ *      all user inputs as a group of pixels at (x,y) along with a size and 
+ *      color parameter.
+ */
+
 public class BrushStroke {
     private int x;
     private int y;
@@ -14,6 +20,7 @@ public class BrushStroke {
         this.size = size;
     }
 
+    //Self explanatory, but allows us to access values
     public int getXval( ){
         return x;
     }
