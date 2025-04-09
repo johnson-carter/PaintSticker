@@ -1,3 +1,4 @@
+package src;
 import java.awt.Color;
 
 public class BrushStroke {
