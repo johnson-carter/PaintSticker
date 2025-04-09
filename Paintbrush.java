@@ -5,6 +5,8 @@ import java.awt.Polygon;
 //import java.lang.Math;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
 
 import javax.imageio.ImageIO;
 
@@ -124,12 +126,21 @@ class Paintbrush  {
         }
     }
 
-    public void startStroke(int x, int y, Color color){
+    public void startStroke(int x, int y, Color color, int size){
         g.setColor(color);
-        g.fillRect(x, y, 4, 4);
-        System.out.println("Stoke displayed");
+        g.fillOval(x, y, size, size);
     }
 
+    public void drawStrokes(List<List<BrushStroke>> inList){
+        
+        //DEBUG - Good to this point
+        for (List<BrushStroke> group : inList) {
+            for (BrushStroke stroke : group) {
+                g.setColor(stroke.getColor());
+                g.fillOval(stroke.getXval(), stroke.getYval(), stroke.getSize(), stroke.getSize());
+            }
+        }
+    }
 
 
 
