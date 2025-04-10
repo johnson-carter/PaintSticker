@@ -1,6 +1,10 @@
 package src;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -9,8 +13,12 @@ import javax.swing.border.MatteBorder;
 
 public class App{
 
-    // Color variables - Update for new theme.
-        // Simple Light Theme
+        private static MyCanvas canvas = new MyCanvas();
+        private static JPanel topTray = new JPanel();
+        private static JPanel sideBar = new JPanel();
+
+        
+        //Light theme colors
         static Color lightSimple = new Color(240, 240, 240);
         static Color regularSimple = new Color(200, 200, 200);
         static Color darkSimple = new Color(150, 150, 150);
@@ -44,6 +52,41 @@ public class App{
         static Color accent2 = accentRedOrange;
         static Color accent3 = accentLightGreen;
 
+     public static void loadThemeConfig(String theme) {
+        Properties prop = new Properties();
+        
+        try (FileInputStream input = new FileInputStream("themeConfig.properties")) {
+            // Load the properties file
+            prop.load(input);
+            
+            // Read the colors for the selected theme
+            String sysLight = prop.getProperty(theme + ".sysLight");
+            String sysColor = prop.getProperty(theme + ".sysColor");
+            String sysDark = prop.getProperty(theme + ".sysDark");
+            String accent1 = prop.getProperty(theme + ".accent1");
+            String accent2 = prop.getProperty(theme + ".accent2");
+            String accent3 = prop.getProperty(theme + ".accent3");
+
+            // Apply the colors to your application
+            applyThemeColors(sysLight, sysColor, sysDark, accent1, accent2, accent3);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    private static void applyThemeColors(String sysLight, String sysColor, String sysDark, String accent1, String accent2, String accent3) {
+        // Assuming the colors are stored as hex strings, convert them
+        App.sysLight = Color.decode(sysLight);
+        App.sysColor = Color.decode(sysColor);
+        App.sysDark = Color.decode(sysDark);
+        App.accent1 = Color.decode(accent1);
+        App.accent2 = Color.decode(accent2);
+        App.accent3 = Color.decode(accent3);
+
+        // After loading the colors, apply them to your components
+
+        canvas.repaint();
+    }
+
 
     public static void applyTheme(String theme){
         if(theme.equals("Light")){
@@ -68,12 +111,16 @@ public class App{
              accent2 = accentRed;
              accent3 = accentBrightGreen;
         }
+        
     }
+    public static void refreshColors(JPanel panel){
+        
+    }
+    
     public static void applyLayout(String layout){
-
+        //To be implemented
     }
     public static void main(String[] args) {
-
 
         ////////////////////////////////////
         //Defines window and content frames
@@ -81,17 +128,11 @@ public class App{
         
 
         JFrame window = new JFrame("PaintSticker");
-        //Custom JPanel object - see MyCanvas.Java
-        MyCanvas canvas = new MyCanvas();
         
         //Just declared this now
         Image scaledImage;
         int brushMode;
         Color colorSel = Color.black;
-        
-        // GUI panels
-        JPanel topTray = new JPanel();
-        JPanel sideBar = new JPanel();
 
         ///////////////////////////////////
         //Tookit / TopTray Components
@@ -299,20 +340,16 @@ public class App{
 
         newButton.addActionListener(e -> {
             canvas.clearAll();
-            canvas.setCanvasState(1);
-            canvas.repaint();
+            canvas.importImage();
         });
         fileButton.addActionListener(e -> {
-            canvas.clearAll();
-            canvas.setCanvasState(0);
-            canvas.repaint();
+            canvas.exportImage();
         });
         settingButton.addActionListener(e -> {
             SettingsDialog settingsDialog = new SettingsDialog(window, (theme, layout) -> {
                 System.out.println("Theme selected: " + theme);
                 System.out.println("Layout selected: " + layout);
                 
-                // 🧠 Do something with theme/layout
                 applyTheme(theme);
                 applyLayout(layout);
             });

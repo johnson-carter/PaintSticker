@@ -2,9 +2,18 @@ package src;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /*      
  *  MyCanvas Class - Interprets inputs and uses Paintbrush.java to 
@@ -22,11 +31,74 @@ class MyCanvas extends JPanel {
     // These all recieve a corresponding value from toolkit inputs
     private List<List<BrushStroke>> totalStrokes = new ArrayList<>();
     private List<BrushStroke> strokes = new ArrayList<>();
-    private int state = 0;
+    private int state = 1;
     private int brushStatus = 1;
     private int size = 2;
     private Color colorSel = Color.black;
-    
+    private BufferedImage backgroundImage = null;
+
+    public void importImage() {
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileFilter(new FileNameExtensionFilter(
+        "Image files", ImageIO.getReaderFileSuffixes()));
+    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        try {
+            File file = chooser.getSelectedFile();
+            backgroundImage = ImageIO.read(file);
+            // resize canvas if you like:
+            setPreferredSize(new Dimension(
+                backgroundImage.getWidth(),
+                backgroundImage.getHeight()));
+            revalidate();
+            repaint();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Failed to load image:\n" + ex.getMessage(),
+                "Load Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
+
+public void exportImage() {
+    // create a combined image
+    int w = getWidth(), h = getHeight();
+    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = out.createGraphics();
+    // draw background
+    if (backgroundImage != null) {
+        g2.drawImage(backgroundImage, 0, 0, null);
+    } else {
+        // optional: fill with white
+        g2.setColor(Color.WHITE);
+        g2.fillRect(0, 0, w, h);
+    }
+    // draw your strokes
+    // you can reuse your Paintbrush or draw directly:
+    for (List<BrushStroke> group : totalStrokes) {
+        for (BrushStroke s : group) {
+            g2.setColor(s.getColor());
+            g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+        }
+    }
+    g2.dispose();
+
+    // save to file
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileFilter(new FileNameExtensionFilter("PNG Image", "png"));
+    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        File file = chooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".png")) {
+            file = new File(file.getAbsolutePath() + ".png");
+        }
+        try {
+            ImageIO.write(out, "PNG", file);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Failed to save image:\n" + ex.getMessage(),
+                "Save Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
 
     /////////////////////////
     // Methods for generating content from App.java controlled inputs
@@ -97,6 +169,9 @@ class MyCanvas extends JPanel {
         super.paintComponent(g);
         Paintbrush myBrush = new Paintbrush(g);
         myBrush.setBackground(state);    
+        if(backgroundImage != null){
+            g.drawImage(backgroundImage, 0, 0, this);
+        }
         /*
             Brush State references:
             0 - Original sky/grass background
