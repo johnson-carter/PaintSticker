@@ -9,7 +9,7 @@ import javax.swing.border.MatteBorder;
 
 
 public class App{
-
+		private static int brushMode;
         // Simple Dark Theme
         static Color lightDark = new Color(100, 100, 100);
         static Color regularDark = new Color(60, 60, 60);
@@ -28,9 +28,13 @@ public class App{
 
      
     public static void main(String[] args) {
-
-        MyCanvas canvas = new MyCanvas();
-        JPanel topTray = new JPanel();
+    	
+    	setBrushMode(1);
+        
+    	
+    	MyCanvas canvas = new MyCanvas();
+        canvas.setBrushMode(1);
+    	JPanel topTray = new JPanel();
         JPanel sideBar = new JPanel();
         ////////////////////////////////////
         //Defines window and content frames
@@ -40,8 +44,7 @@ public class App{
         JFrame window = new JFrame("PaintSticker");
         
         //Just declared this now
-        Image scaledImage;
-        int brushMode;
+        Image scaledImage;					// 1 - Circle Brush // 2 - Eraser //
         Color colorSel = Color.black;
 
         ///////////////////////////////////
@@ -61,7 +64,8 @@ public class App{
         scaledImage = undoIcon.getImage().getScaledInstance(20, 20, 0);
         undoIcon.setImage(scaledImage);
         JButton undoButton = new JButton(undoIcon);
-        undoButton.setBackground(accent2);
+        undoButton.setBackground(null);
+        undoButton.setFocusPainted(false);
         undoButton.setPreferredSize(new Dimension(25, 25));
         topTray.add(undoButton);
 
@@ -115,7 +119,7 @@ public class App{
         //////////////////////////////
 
         //Sidebar properties
-        sideBar.setBackground(sysColor);
+        sideBar.setBackground(sysLight);
         sideBar.setPreferredSize( new Dimension(55, window.getHeight()));
         sideBar.setVisible(true);
 
@@ -128,22 +132,27 @@ public class App{
         scaledImage = addIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
         addIcon.setImage(scaledImage);
         JButton newButton = new JButton(addIcon);
-        newButton.setBackground(lightDark);
+        newButton.setBackground(null);
+        newButton.setFocusPainted(false);
         newButton.setPreferredSize(sideBarButtonDimension);
 
         ImageIcon saveIcon = new ImageIcon("images/saveIcon.png");
         scaledImage = saveIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
         saveIcon.setImage(scaledImage);
         JButton fileButton = new JButton(saveIcon);
-        fileButton.setBackground(lightDark);
+        fileButton.setBackground(null);
+        fileButton.setFocusPainted(false);
         fileButton.setPreferredSize(sideBarButtonDimension);
+
+        
         
         ImageIcon settingsIcon = new ImageIcon("images/settingsIcon.png");
         scaledImage = settingsIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
         settingsIcon.setImage(scaledImage);
         JButton settingButton = new JButton(settingsIcon);
-        settingButton.setBackground(lightDark);
+        settingButton.setBackground(null);
         settingButton.setPreferredSize(sideBarButtonDimension);
+        settingButton.setFocusPainted(false);
 
 
         sideBar.add(newButton);
@@ -181,6 +190,7 @@ public class App{
             brush.setIcon(brushHighlighted);
             eraser.setIcon(eraserIcon);
             canvas.setBrushMode(1);
+            setBrushMode(1);
         });
 
         //Eraser Button 
@@ -188,6 +198,7 @@ public class App{
             brush.setIcon(brushIcon);
             eraser.setIcon(eraserHighlighted);
             canvas.setBrushMode(2);
+            brushMode = 2;
               //TODO --- Implement eraser
         });
 
@@ -225,7 +236,7 @@ public class App{
         canvas.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e){  //Determines when click starts
                  canvas.startNewGroup();
-                 canvas.newStroke(e.getX(), e.getY());
+                 canvas.newStroke(e.getX(), e.getY(), getBrushMode());
                  canvas.repaint();
             }
             @Override
@@ -236,7 +247,7 @@ public class App{
         //Detecting drag
         canvas.addMouseMotionListener(new MouseMotionAdapter() {
            public void mouseDragged(MouseEvent e){
-                canvas.newStroke(e.getX(), e.getY());
+                canvas.newStroke(e.getX(), e.getY(), getBrushMode());
                 canvas.repaint();
             } 
         });
@@ -263,5 +274,11 @@ public class App{
             });
             settingsDialog.setVisible(true);
         });
+        
+        //Helper functions of sorts
+        
     }
+
+    public static void setBrushMode(int mode) {brushMode = mode;}
+    public static int getBrushMode(){return brushMode;}
 } 

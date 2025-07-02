@@ -4,7 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SettingsDialog extends JDialog {
-    private JComboBox<String> themeDropdown;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3486768414631139560L;
+	private JComboBox<String> themeDropdown;
     private JComboBox<String> layoutDropdown;
 
     public interface SettingsListener {

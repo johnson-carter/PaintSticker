@@ -28,7 +28,11 @@ class MyCanvas extends JPanel {
     ///////////////////////
     
 
-    // These all recieve a corresponding value from toolkit inputs
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1695609604884035420L;
+	// These all receive a corresponding value from toolkit inputs
     private List<List<BrushStroke>> totalStrokes = new ArrayList<>();
     private List<BrushStroke> strokes = new ArrayList<>();
     private int state = 1;
@@ -38,67 +42,67 @@ class MyCanvas extends JPanel {
     private BufferedImage backgroundImage = null;
 
     public void importImage() {
-    JFileChooser chooser = new JFileChooser();
-    chooser.setFileFilter(new FileNameExtensionFilter(
-        "Image files", ImageIO.getReaderFileSuffixes()));
-    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-        try {
-            File file = chooser.getSelectedFile();
-            backgroundImage = ImageIO.read(file);
-            // resize canvas if you like:
-            setPreferredSize(new Dimension(
-                backgroundImage.getWidth(),
-                backgroundImage.getHeight()));
-            revalidate();
-            repaint();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
-                "Failed to load image:\n" + ex.getMessage(),
-                "Load Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-}
-
-public void exportImage() {
-    // create a combined image
-    int w = getWidth(), h = getHeight();
-    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g2 = out.createGraphics();
-    // draw background
-    if (backgroundImage != null) {
-        g2.drawImage(backgroundImage, 0, 0, null);
-    } else {
-        // optional: fill with white
-        g2.setColor(Color.WHITE);
-        g2.fillRect(0, 0, w, h);
-    }
-    // draw your strokes
-    // you can reuse your Paintbrush or draw directly:
-    for (List<BrushStroke> group : totalStrokes) {
-        for (BrushStroke s : group) {
-            g2.setColor(s.getColor());
-            g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
-        }
-    }
-    g2.dispose();
-
-    // save to file
-    JFileChooser chooser = new JFileChooser();
-    chooser.setFileFilter(new FileNameExtensionFilter("PNG Image", "png"));
-    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-        File file = chooser.getSelectedFile();
-        if (!file.getName().toLowerCase().endsWith(".png")) {
-            file = new File(file.getAbsolutePath() + ".png");
-        }
-        try {
-            ImageIO.write(out, "PNG", file);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
-                "Failed to save image:\n" + ex.getMessage(),
-                "Save Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-}
+	    JFileChooser chooser = new JFileChooser();
+	    chooser.setFileFilter(new FileNameExtensionFilter(
+	        "Image files", ImageIO.getReaderFileSuffixes()));
+	    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+	        try {
+	            File file = chooser.getSelectedFile();
+	            backgroundImage = ImageIO.read(file);
+	            // resize canvas if you like:
+	            setPreferredSize(new Dimension(
+	                backgroundImage.getWidth(),
+	                backgroundImage.getHeight()));
+	            revalidate();
+	            repaint();
+	        } catch (IOException ex) {
+	            JOptionPane.showMessageDialog(this,
+	                "Failed to load image:\n" + ex.getMessage(),
+	                "Load Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+	
+	public void exportImage() {
+	    // create a combined image
+	    int w = getWidth(), h = getHeight();
+	    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2 = out.createGraphics();
+	    // draw background
+	    if (backgroundImage != null) {
+	        g2.drawImage(backgroundImage, 0, 0, null);
+	    } else {
+	        // optional: fill with white
+	        g2.setColor(Color.WHITE);
+	        g2.fillRect(0, 0, w, h);
+	    }
+	    // draw your strokes
+	    // you can reuse your Paintbrush or draw directly:
+	    for (List<BrushStroke> group : totalStrokes) {
+	        for (BrushStroke s : group) {
+	            g2.setColor(s.getColor());
+	            g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+	        }
+	    }
+	    g2.dispose();
+	
+	    // save to file
+	    JFileChooser chooser = new JFileChooser();
+	    chooser.setFileFilter(new FileNameExtensionFilter("PNG Image", "png"));
+	    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+	        File file = chooser.getSelectedFile();
+	        if (!file.getName().toLowerCase().endsWith(".png")) {
+	            file = new File(file.getAbsolutePath() + ".png");
+	        }
+	        try {
+	            ImageIO.write(out, "PNG", file);
+	        } catch (IOException ex) {
+	            JOptionPane.showMessageDialog(this,
+	                "Failed to save image:\n" + ex.getMessage(),
+	                "Save Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
 
     /////////////////////////
     // Methods for generating content from App.java controlled inputs
@@ -111,8 +115,10 @@ public void exportImage() {
 
     }
     //When the mouse is dragged it records a series of x,y pairs and adds them to our List of Lists
-    public void newStroke(int x, int y){
-        BrushStroke currentStroke = new BrushStroke(x, y, colorSel, size);
+    public void newStroke(int x, int y, int brush){
+        Color paintCol = colorSel;
+    	if(brush == 2) {paintCol = Color.white;}
+    	BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
         strokes.add(currentStroke);
         //Interpolation algorithm will run with >1 point present
         if (strokes.size() >= 2) {
