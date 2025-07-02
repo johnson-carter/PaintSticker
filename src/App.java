@@ -1,9 +1,6 @@
 package src;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -12,20 +9,6 @@ import javax.swing.border.MatteBorder;
 
 
 public class App{
-
-        private static MyCanvas canvas = new MyCanvas();
-        private static JPanel topTray = new JPanel();
-        private static JPanel sideBar = new JPanel();
-
-        
-        //Light theme colors
-        static Color lightSimple = new Color(240, 240, 240);
-        static Color regularSimple = new Color(200, 200, 200);
-        static Color darkSimple = new Color(150, 150, 150);
-
-        static Color accentBlue = new Color(70, 130, 180); // Steel Blue
-        static Color accentOrange = new Color(255, 165, 0); // Orange
-        static Color accentGreen = new Color(50, 205, 50); // Lime Green
 
         // Simple Dark Theme
         static Color lightDark = new Color(100, 100, 100);
@@ -36,15 +19,6 @@ public class App{
         static Color accentRedOrange = new Color(255, 69, 0); // Red-Orange
         static Color accentLightGreen = new Color(144, 238, 144); // Light Green
 
-         // High Contrast Theme
-         static Color lightContrast = new Color(255, 255, 255);
-        static Color regularContrast = new Color(0, 0, 0);
-        static Color darkContrast = new Color(0, 0, 0);
-
-        static Color accentYellow = new Color(255, 255, 0); // Bright Yellow
-        static Color accentRed = new Color(255, 0, 0); // Pure Red
-        static Color accentBrightGreen = new Color(0, 255, 0); // Bright Green
-                    // TODO --- add themes, selector in settings.
         static Color sysLight = lightDark;
         static Color sysColor = regularDark;
         static Color sysDark = darkDark;
@@ -52,76 +26,12 @@ public class App{
         static Color accent2 = accentRedOrange;
         static Color accent3 = accentLightGreen;
 
-     public static void loadThemeConfig(String theme) {
-        Properties prop = new Properties();
-        
-        try (FileInputStream input = new FileInputStream("themeConfig.properties")) {
-            // Load the properties file
-            prop.load(input);
-            
-            // Read the colors for the selected theme
-            String sysLight = prop.getProperty(theme + ".sysLight");
-            String sysColor = prop.getProperty(theme + ".sysColor");
-            String sysDark = prop.getProperty(theme + ".sysDark");
-            String accent1 = prop.getProperty(theme + ".accent1");
-            String accent2 = prop.getProperty(theme + ".accent2");
-            String accent3 = prop.getProperty(theme + ".accent3");
-
-            // Apply the colors to your application
-            applyThemeColors(sysLight, sysColor, sysDark, accent1, accent2, accent3);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-    private static void applyThemeColors(String sysLight, String sysColor, String sysDark, String accent1, String accent2, String accent3) {
-        // Assuming the colors are stored as hex strings, convert them
-        App.sysLight = Color.decode(sysLight);
-        App.sysColor = Color.decode(sysColor);
-        App.sysDark = Color.decode(sysDark);
-        App.accent1 = Color.decode(accent1);
-        App.accent2 = Color.decode(accent2);
-        App.accent3 = Color.decode(accent3);
-
-        // After loading the colors, apply them to your components
-
-        canvas.repaint();
-    }
-
-
-    public static void applyTheme(String theme){
-        if(theme.equals("Light")){
-             sysLight = lightSimple;
-             sysColor = regularSimple;
-             sysDark = regularSimple;
-             accent1 = accentBlue;
-             accent2 = accentOrange;
-            accent3 = accentGreen;
-        } else if(theme.equals("Dark")){
-             sysLight = lightDark;
-             sysColor = regularDark;
-             sysDark = darkDark;
-             accent1 = accentSkyBlue;
-             accent2 = accentRedOrange;
-             accent3 = accentLightGreen;
-        } else if(theme.equals("High-Contrast")){
-             sysLight = lightContrast;
-             sysColor = regularContrast;
-             sysDark = darkContrast;
-             accent1 = accentYellow;
-             accent2 = accentRed;
-             accent3 = accentBrightGreen;
-        }
-        
-    }
-    public static void refreshColors(JPanel panel){
-        
-    }
-    
-    public static void applyLayout(String layout){
-        //To be implemented
-    }
+     
     public static void main(String[] args) {
 
+        MyCanvas canvas = new MyCanvas();
+        JPanel topTray = new JPanel();
+        JPanel sideBar = new JPanel();
         ////////////////////////////////////
         //Defines window and content frames
         ////////////////////////////////////
@@ -350,8 +260,6 @@ public class App{
                 System.out.println("Theme selected: " + theme);
                 System.out.println("Layout selected: " + layout);
                 
-                applyTheme(theme);
-                applyLayout(layout);
             });
             settingsDialog.setVisible(true);
         });
