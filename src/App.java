@@ -4,23 +4,25 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
 
 public class App{
 		private static int brushMode;
+        private static Color selectedColor = Color.black;
         // Simple Dark Theme
-        static Color lightDark = new Color(100, 100, 100);
-        static Color regularDark = new Color(60, 60, 60);
-        static Color darkDark = new Color(30, 30, 30);
+        private final static Color LIGHTDARK = new Color(100, 100, 100);
+        private final static Color REGULARDARK = new Color(60, 60, 60);
+        private final static Color DARKDARK = new Color(30, 30, 30);
 
-        static Color accentSkyBlue = new Color(135, 206, 250); // Light Sky Blue
-        static Color accentRedOrange = new Color(255, 69, 0); // Red-Orange
-        static Color accentLightGreen = new Color(144, 238, 144); // Light Green
+        private final static Color accentSkyBlue = new Color(135, 206, 250); // Light Sky Blue
+        private final static Color accentRedOrange = new Color(255, 69, 0); // Red-Orange
+        private final static Color accentLightGreen = new Color(144, 238, 144); // Light Green
 
-        static Color sysLight = lightDark;
-        static Color sysColor = regularDark;
-        static Color sysDark = darkDark;
+        static Color sysLight = LIGHTDARK;
+        static Color sysColor = REGULARDARK;
+        static Color sysDark = DARKDARK;
         static Color accent1 = accentSkyBlue;
         static Color accent2 = accentRedOrange;
         static Color accent3 = accentLightGreen;
@@ -64,12 +66,14 @@ public class App{
         JButton undoButton = new JButton(undoIcon);
         undoButton.setBackground(accent2);
         undoButton.setFocusPainted(false);
-        undoButton.setBorder(null);
-        undoButton.setPreferredSize(new Dimension(25, 25));
+        undoButton.setBorder(new LineBorder(sysDark, 2));
+        undoButton.setPreferredSize(new Dimension(30, 30));
         topTray.add(undoButton);
 
         // Toolkit break
-        JLabel toolkitLabel = new JLabel("Select Tool: ");
+        JLabel toolkitLabel = new JLabel(" Select Tool: ");
+        toolkitLabel.setFont(new Font("Verdana", Font.BOLD, 12));
+        toolkitLabel.setForeground(accent1);
         topTray.add(toolkitLabel);
 
         //Brush Selector
@@ -77,6 +81,8 @@ public class App{
         ImageIcon brushHighlighted = new ImageIcon("images/brushIcon2.png");
         JButton brush = new JButton(brushIcon);
         brush.setPreferredSize(new Dimension(30, 30));
+        brush.setFocusPainted(false);
+        brush.setBorder(new LineBorder(sysDark, 2));
         brush.setBackground(sysLight);
         topTray.add(brush);
 
@@ -86,28 +92,39 @@ public class App{
         JButton eraser = new JButton(eraserIcon);
         eraser.setPreferredSize(new Dimension(30, 30));
         eraser.setBackground(sysLight);
+        eraser.setFocusPainted(false);
+        eraser.setBorder(new LineBorder(sysDark, 2));
         topTray.add(eraser);
+
+        JButton textField = new JButton("t|");
+        textField.setFont(new Font("Verdana", Font.BOLD, 12));
+        textField.setPreferredSize(new Dimension(30, 30));
+        textField.setBackground(sysLight);
+        textField.setFocusPainted(false);
+        textField.setBorder(new LineBorder(sysDark, 2));
+        textField.setForeground(sysDark);
+        topTray.add(textField);
 
         //Color Selector   
         //DEPRACATED -- WATCH FOR REPLACE -- String[] colorsList = {"Black", "White", "Red", "Blue", "Green"};
         JButton selectColor = new JButton("Select Color");
         selectColor.setFont(new Font("Verdana", Font.PLAIN, 12));
         selectColor.setPreferredSize(new Dimension(120,30));
-        selectColor.setBackground(accent3);
+        selectColor.setBackground(selectedColor);
         selectColor.setFocusPainted(false);
-        selectColor.setBorder(null);
-        selectColor.setForeground(sysDark);
+        selectColor.setBorder(new LineBorder(sysDark, 2));
+        selectColor.setForeground(sysLight);
         topTray.add(selectColor);
 
         //Brush Size Selector
         Integer[] brushSizesList = {1, 2, 5, 10, 15, 30};
-        JComboBox<Integer> brushSizeSelector;
-        brushSizeSelector = new JComboBox<>(brushSizesList);
+        JComboBox<Integer> brushSizeSelector = new JComboBox<>(brushSizesList);
+        brushSizeSelector.setSelectedIndex(4);
         topTray.add(brushSizeSelector);
                      
         //Some alignment and settings for the TopTray
         FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
-        topTray.setBackground(sysLight);
+        topTray.setBackground(sysColor);
         topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
         topTray.setLayout(topLayout);
         topTray.setVisible(true);
@@ -196,6 +213,7 @@ public class App{
         brush.addActionListener(e -> {
             brush.setIcon(brushHighlighted);
             eraser.setIcon(eraserIcon);
+            textField.setForeground(sysDark);
             canvas.setBrushMode(1);
             setBrushMode(1);
         });
@@ -204,14 +222,25 @@ public class App{
         eraser.addActionListener(e -> {
             brush.setIcon(brushIcon);
             eraser.setIcon(eraserHighlighted);
+            textField.setForeground(sysDark);
             canvas.setBrushMode(2);
-            brushMode = 2;
+            setBrushMode(3);
               //TODO --- Implement eraser
+        });
+
+        textField.addActionListener(e -> {
+            brush.setIcon(brushIcon);
+            eraser.setIcon(eraserIcon);
+            textField.setForeground(accent1);
+            canvas.setBrushMode(3);
+            setBrushMode(3);
         });
 
         //Color Selector
         selectColor.addActionListener(e -> {
-            Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.white);
+            Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.black);
+            selectedColor = colorChosen; // Update the static variable
+            selectColor.setBackground(selectedColor);
             if (colorChosen != null) {
                 canvas.setColorChosen(colorChosen);
             }

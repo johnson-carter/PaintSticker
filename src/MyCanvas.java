@@ -36,7 +36,7 @@ class MyCanvas extends JPanel {
     private List<BrushStroke> strokes = new ArrayList<>();
     private int state = 1;
     private int brushStatus = 1;
-    private int size = 2;
+    private int size = 15;
     private Color colorSel = Color.black;
     private BufferedImage backgroundImage = null;
 
@@ -116,23 +116,24 @@ class MyCanvas extends JPanel {
     //When the mouse is dragged it records a series of x,y pairs and adds them to our List of Lists
     public void newStroke(int x, int y, int brush){
         Color paintCol = colorSel;
-    	if(brush == 2) {paintCol = new Color(255,255,255,0);}
-    	BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
-        strokes.add(currentStroke);
-        //Interpolation algorithm will run with >1 point present
-        if (strokes.size() >= 2) {
-            BrushStroke prev = strokes.get(strokes.size() - 2);
-            BrushStroke curr = currentStroke;
+    	if(brush == 1) {
+            BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
+            strokes.add(currentStroke);
+            //Interpolation algorithm will run with >1 point present
+            if (strokes.size() >= 2) {
+                BrushStroke prev = strokes.get(strokes.size() - 2);
+                BrushStroke curr = currentStroke;
 
-            double distance = Math.hypot(curr.getXval() - prev.getXval(), curr.getYval() - prev.getYval());
-            if (distance > 100) return;
+                double distance = Math.hypot(curr.getXval() - prev.getXval(), curr.getYval() - prev.getYval());
+                if (distance > 100) return;
 
-            for (double i = 0; i <= distance; i += 1.0) {
-                double t = i / distance;
-                int interpX = (int) Math.round(prev.getXval() + t * (curr.getXval() - prev.getXval()));
-                int interpY = (int) Math.round(prev.getYval() + t * (curr.getYval() - prev.getYval()));
-                strokes.add(new BrushStroke(interpX, interpY, curr.getColor(), curr.getSize()));
-                
+                for (double i = 0; i <= distance; i += 1.0) {
+                    double t = i / distance;
+                    int interpX = (int) Math.round(prev.getXval() + t * (curr.getXval() - prev.getXval()));
+                    int interpY = (int) Math.round(prev.getYval() + t * (curr.getYval() - prev.getYval()));
+                    strokes.add(new BrushStroke(interpX, interpY, curr.getColor(), curr.getSize()));
+                    
+                }
             }
         }
     }
