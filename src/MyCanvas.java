@@ -6,9 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
-
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -117,7 +116,7 @@ class MyCanvas extends JPanel {
     //When the mouse is dragged it records a series of x,y pairs and adds them to our List of Lists
     public void newStroke(int x, int y, int brush){
         Color paintCol = colorSel;
-    	if(brush == 2) {paintCol = Color.white;}
+    	if(brush == 2) {paintCol = new Color(255,255,255,0);}
     	BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
         strokes.add(currentStroke);
         //Interpolation algorithm will run with >1 point present

@@ -1,7 +1,6 @@
 package src;
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -45,7 +44,6 @@ public class App{
         
         //Just declared this now
         Image scaledImage;					// 1 - Circle Brush // 2 - Eraser //
-        Color colorSel = Color.black;
 
         ///////////////////////////////////
         //Tookit / TopTray Components
@@ -64,8 +62,9 @@ public class App{
         scaledImage = undoIcon.getImage().getScaledInstance(20, 20, 0);
         undoIcon.setImage(scaledImage);
         JButton undoButton = new JButton(undoIcon);
-        undoButton.setBackground(null);
+        undoButton.setBackground(accent2);
         undoButton.setFocusPainted(false);
+        undoButton.setBorder(null);
         undoButton.setPreferredSize(new Dimension(25, 25));
         topTray.add(undoButton);
 
@@ -90,9 +89,14 @@ public class App{
         topTray.add(eraser);
 
         //Color Selector   
-        String[] colorsList = {"Black", "White", "Red", "Blue", "Green"};
-        JComboBox<String> selectColor = new JComboBox<>(colorsList);
-        selectColor.setFont(new Font("Arial Rounded", Font.BOLD, 15));
+        //DEPRACATED -- WATCH FOR REPLACE -- String[] colorsList = {"Black", "White", "Red", "Blue", "Green"};
+        JButton selectColor = new JButton("Select Color");
+        selectColor.setFont(new Font("Verdana", Font.PLAIN, 12));
+        selectColor.setPreferredSize(new Dimension(120,30));
+        selectColor.setBackground(accent3);
+        selectColor.setFocusPainted(false);
+        selectColor.setBorder(null);
+        selectColor.setForeground(sysDark);
         topTray.add(selectColor);
 
         //Brush Size Selector
@@ -133,6 +137,7 @@ public class App{
         addIcon.setImage(scaledImage);
         JButton newButton = new JButton(addIcon);
         newButton.setBackground(null);
+        newButton.setBorder(null);
         newButton.setFocusPainted(false);
         newButton.setPreferredSize(sideBarButtonDimension);
 
@@ -141,6 +146,7 @@ public class App{
         saveIcon.setImage(scaledImage);
         JButton fileButton = new JButton(saveIcon);
         fileButton.setBackground(null);
+        fileButton.setBorder(null);
         fileButton.setFocusPainted(false);
         fileButton.setPreferredSize(sideBarButtonDimension);
 
@@ -151,6 +157,7 @@ public class App{
         settingsIcon.setImage(scaledImage);
         JButton settingButton = new JButton(settingsIcon);
         settingButton.setBackground(null);
+        settingButton.setBorder(null);
         settingButton.setPreferredSize(sideBarButtonDimension);
         settingButton.setFocusPainted(false);
 
@@ -203,21 +210,11 @@ public class App{
         });
 
         //Color Selector
-        selectColor.addActionListener(e ->{
-            Color colorChosen = colorSel;
-            String stickerChose = (String) selectColor.getSelectedItem();
-            if(stickerChose.equals("Red")){
-                colorChosen = Color.red;
-            } else if (stickerChose.equals("Blue")){
-                colorChosen = Color.blue;
-            } else if (stickerChose.equals("Green")){
-                colorChosen = Color.green;
-            } else if (stickerChose.equals("Black")){
-                colorChosen = Color.black;
-            } else if (stickerChose.equals("White")){
-                colorChosen = Color.white;
+        selectColor.addActionListener(e -> {
+            Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.white);
+            if (colorChosen != null) {
+                canvas.setColorChosen(colorChosen);
             }
-            canvas.setColorChosen(colorChosen);
         });
 
         //Brush Size Selector

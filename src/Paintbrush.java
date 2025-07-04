@@ -2,14 +2,7 @@ package src;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.awt.Polygon;
-//import java.lang.Math;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-
-
-import javax.imageio.ImageIO;
 
 
 class Paintbrush  {
@@ -23,7 +16,8 @@ class Paintbrush  {
 
 // Based on string value passed from parameters, different polygons are displayed
 //Eventual change -- Replace with illustrations
-    public void addSticker(int xCord, int yCord, String sticker){
+// ---- ORIGINAL STICKER LOGIC ---- To be reimplemented later, image based stickers
+    /*public void addSticker(int xCord, int yCord, String sticker){
         // yCord = Math.abs(yCord - 720);
         if (sticker.equals("Rock")){
             g.setColor(new Color(128,128,128));
@@ -125,7 +119,7 @@ class Paintbrush  {
         } else {
 
         }
-    }
+    }*/
 
     public void startStroke(int x, int y, Color color, int size){
         g.setColor(color);
@@ -142,6 +136,7 @@ class Paintbrush  {
             }
         }
     }
+
 
 
 
