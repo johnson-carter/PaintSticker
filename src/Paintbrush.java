@@ -1,6 +1,8 @@
 package src;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -121,9 +123,24 @@ class Paintbrush  {
         }
     }*/
 
+    // Draws a normal brush stroke (opaque color)
     public void startStroke(int x, int y, Color color, int size){
-        g.setColor(color);
-        g.fillOval(x, y, size, size);
+        if (color == null || (color.getAlpha() == 0)) {
+            eraseAt(x, y, size);
+        } else {
+            g.setColor(color);
+            g.fillOval(x, y, size, size);
+        }
+    }
+
+    // Erase (make transparent) at the given location/size
+    private void eraseAt(int x, int y, int size) {
+        if (g instanceof Graphics2D) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setComposite(AlphaComposite.Clear);
+            g2d.fillOval(x, y, size, size);
+            g2d.dispose();
+        }
     }
 
     public void drawStrokes(List<List<BrushStroke>> inList){
@@ -131,24 +148,26 @@ class Paintbrush  {
         //DEBUG - Good to this point
         for (List<BrushStroke> group : inList) {
             for (BrushStroke stroke : group) {
-                g.setColor(stroke.getColor());
-                g.fillOval(stroke.getXval(), stroke.getYval(), stroke.getSize(), stroke.getSize());
+                Color c = stroke.getColor();
+                if (c == null || (c.getAlpha() == 0)) {
+                    eraseAt(stroke.getXval(), stroke.getYval(), stroke.getSize());
+                } else {
+                    g.setColor(c);
+                    g.fillOval(stroke.getXval(), stroke.getYval(), stroke.getSize(), stroke.getSize());
+                }
             }
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    // Draw a background rectangle of the given color
+    public void drawBackgroundRect(Color color, int width, int height) {
+        if (color != null && g != null) {
+            Color old = g.getColor();
+            g.setColor(color);
+            g.fillRect(0, 0, width, height);
+            g.setColor(old);
+        }
+    }
 
     public void setBackground(int state){
         if (state == 0){
@@ -163,3 +182,4 @@ class Paintbrush  {
         }
     }
 }
+        

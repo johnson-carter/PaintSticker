@@ -16,16 +16,17 @@ public class App{
         private final static Color REGULARDARK = new Color(60, 60, 60);
         private final static Color DARKDARK = new Color(30, 30, 30);
 
-        private final static Color accentSkyBlue = new Color(135, 206, 250); // Light Sky Blue
-        private final static Color accentRedOrange = new Color(255, 69, 0); // Red-Orange
-        private final static Color accentLightGreen = new Color(144, 238, 144); // Light Green
+        private final static Color SKYBLUE = new Color(135, 206, 250); // Light Sky Blue
+        private final static Color REDORANGE = new Color(255, 69, 0); // Red-Orange
+        private final static Color LIGHTGREEN = new Color(144, 238, 144); // Light Green
 
         static Color sysLight = LIGHTDARK;
         static Color sysColor = REGULARDARK;
         static Color sysDark = DARKDARK;
-        static Color accent1 = accentSkyBlue;
-        static Color accent2 = accentRedOrange;
-        static Color accent3 = accentLightGreen;
+    
+        static Color accent1 = SKYBLUE;
+        static Color accent2 = REDORANGE;
+        static Color accent3 = LIGHTGREEN;
 
      
     public static void main(String[] args) {
@@ -79,7 +80,7 @@ public class App{
         //Brush Selector
         ImageIcon brushIcon = new ImageIcon("images/brushIcon.png");
         ImageIcon brushHighlighted = new ImageIcon("images/brushIcon2.png");
-        JButton brush = new JButton(brushIcon);
+        JButton brush = new JButton(brushHighlighted);
         brush.setPreferredSize(new Dimension(30, 30));
         brush.setFocusPainted(false);
         brush.setBorder(new LineBorder(sysDark, 2));
@@ -116,6 +117,16 @@ public class App{
         selectColor.setForeground(sysLight);
         topTray.add(selectColor);
 
+        // Background Color Selector
+        JButton backgroundColorButton = new JButton("Background");
+        backgroundColorButton.setFont(new Font("Verdana", Font.PLAIN, 12));
+        backgroundColorButton.setPreferredSize(new Dimension(120,30));
+        backgroundColorButton.setBackground(Color.white);
+        backgroundColorButton.setFocusPainted(false);
+        backgroundColorButton.setBorder(new LineBorder(sysDark, 2));
+        backgroundColorButton.setForeground(sysLight);
+        topTray.add(backgroundColorButton);
+
         //Brush Size Selector
         Integer[] brushSizesList = {1, 2, 5, 10, 15, 30};
         JComboBox<Integer> brushSizeSelector = new JComboBox<>(brushSizesList);
@@ -143,6 +154,7 @@ public class App{
         sideBar.setBackground(sysLight);
         sideBar.setPreferredSize( new Dimension(55, window.getHeight()));
         sideBar.setVisible(true);
+        sideBar.setBorder(new MatteBorder(0,0,0,3, Color.black));
 
         int scaledImageSize = 40;
         int sideBarButtonSize = 45;
@@ -224,8 +236,7 @@ public class App{
             eraser.setIcon(eraserHighlighted);
             textField.setForeground(sysDark);
             canvas.setBrushMode(2);
-            setBrushMode(3);
-              //TODO --- Implement eraser
+            setBrushMode(2);
         });
 
         textField.addActionListener(e -> {
@@ -246,6 +257,15 @@ public class App{
             }
         });
 
+        // Background Color Selector
+        backgroundColorButton.addActionListener(e -> {
+            Color colorChosen = JColorChooser.showDialog(null, "Pick Background Color", Color.white);
+            if (colorChosen != null) {
+                backgroundColorButton.setBackground(colorChosen);
+                canvas.setBackgroundColor(colorChosen);
+            }
+        });
+
         //Brush Size Selector
         brushSizeSelector.addActionListener(e -> {
             Integer bSizeSelected = (int) brushSizeSelector.getSelectedItem();
@@ -260,6 +280,7 @@ public class App{
         
         //Detect & record clicks
         canvas.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent e){  //Determines when click starts
                  canvas.startNewGroup();
                  canvas.newStroke(e.getX(), e.getY(), getBrushMode());
@@ -272,7 +293,8 @@ public class App{
         });
         //Detecting drag
         canvas.addMouseMotionListener(new MouseMotionAdapter() {
-           public void mouseDragged(MouseEvent e){
+            @Override
+            public void mouseDragged(MouseEvent e){
                 canvas.newStroke(e.getX(), e.getY(), getBrushMode());
                 canvas.repaint();
             } 
@@ -307,4 +329,4 @@ public class App{
 
     public static void setBrushMode(int mode) {brushMode = mode;}
     public static int getBrushMode(){return brushMode;}
-} 
+}

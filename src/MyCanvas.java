@@ -20,7 +20,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 
 
-class MyCanvas extends JPanel {
+public class MyCanvas extends JPanel {
 
     ///////////////////////
     /// Fields
@@ -35,10 +35,11 @@ class MyCanvas extends JPanel {
     private List<List<BrushStroke>> totalStrokes = new ArrayList<>();
     private List<BrushStroke> strokes = new ArrayList<>();
     private int state = 1;
-    private int brushStatus = 1;
+    private int brushStatus = 1; // 1 = paintbrush, 2 = eraser, etc.
     private int size = 15;
     private Color colorSel = Color.black;
     private BufferedImage backgroundImage = null;
+    private Color backgroundColor = Color.white;
 
     public void importImage() {
 	    JFileChooser chooser = new JFileChooser();
@@ -63,24 +64,32 @@ class MyCanvas extends JPanel {
 	}
 	
 	public void exportImage() {
-	    // create a combined image
 	    int w = getWidth(), h = getHeight();
 	    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 	    Graphics2D g2 = out.createGraphics();
-	    // draw background
+	    // Draw background color rectangle
+	    Paintbrush exportBrush = new Paintbrush(g2);
+	    exportBrush.drawBackgroundRect(backgroundColor, w, h);
+	    // draw background image if present
 	    if (backgroundImage != null) {
 	        g2.drawImage(backgroundImage, 0, 0, null);
-	    } else {
-	        // optional: fill with white
-	        g2.setColor(Color.WHITE);
-	        g2.fillRect(0, 0, w, h);
 	    }
+	    // do NOT fill with white here, so transparency is preserved
+
 	    // draw your strokes
-	    // you can reuse your Paintbrush or draw directly:
 	    for (List<BrushStroke> group : totalStrokes) {
 	        for (BrushStroke s : group) {
-	            g2.setColor(s.getColor());
-	            g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+	            Color c = s.getColor();
+	            if (c == null || c.getAlpha() == 0) {
+	                // Eraser: clear with AlphaComposite
+	                g2.setComposite(java.awt.AlphaComposite.Clear);
+	                g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+	                g2.setComposite(java.awt.AlphaComposite.SrcOver);
+	            } else {
+	                g2.setComposite(java.awt.AlphaComposite.SrcOver);
+	                g2.setColor(c);
+	                g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+	            }
 	        }
 	    }
 	    g2.dispose();
@@ -116,7 +125,10 @@ class MyCanvas extends JPanel {
     //When the mouse is dragged it records a series of x,y pairs and adds them to our List of Lists
     public void newStroke(int x, int y, int brush){
         Color paintCol = colorSel;
-    	if(brush == 1) {
+    	if(brush == 1 || brush == 2) { // 1 = paintbrush, 2 = eraser
+            if (brush == 2) { // If eraser, set color to transparent
+                paintCol = new Color(0, 0, 0, 0); // Transparent color
+            }
             BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
             strokes.add(currentStroke);
             //Interpolation algorithm will run with >1 point present
@@ -162,11 +174,15 @@ class MyCanvas extends JPanel {
     public void chooseSize(int size){
         this.size = size;
     } 
+    public void setBackgroundColor(Color color) {
+        this.backgroundColor = color;
+        repaint();
+    }
     
     //Constructor, could add arguments? idk why
     public MyCanvas(){
         setPreferredSize(new Dimension(1080, 720));
-        setBackground(Color.white);
+        setBackground(Color.black);
     }
 
     @Override
@@ -174,24 +190,21 @@ class MyCanvas extends JPanel {
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Paintbrush myBrush = new Paintbrush(g);
-        myBrush.setBackground(state);    
+        // Draw background color rectangle
+        myBrush.drawBackgroundRect(backgroundColor, getWidth(), getHeight());
         if(backgroundImage != null){
             g.drawImage(backgroundImage, 0, 0, this);
+        } else {
+            // Default background color if no image is set
+            // (now handled by drawBackgroundRect)
         }
-        /*
-            Brush State references:
-            0 - Original sky/grass background
-            1 - Plain white
-            2 - UserUploaded file? Not implemented yet
-            Currently the new file and download/fileupload button
-            navigates between state 0 and 1. No other control
-            at this time
-        */      
         myBrush.drawStrokes(totalStrokes);
-        }      
-    }
-        
-    
-        
-    
+    }      
+
+        }
+
+
+
+
+
 
