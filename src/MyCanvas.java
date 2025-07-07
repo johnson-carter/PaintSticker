@@ -123,10 +123,10 @@ public class MyCanvas extends JPanel {
 
     }
     //When the mouse is dragged it records a series of x,y pairs and adds them to our List of Lists
-    public void newStroke(int x, int y, int brush){
+    public void newStroke(int x, int y){
         Color paintCol = colorSel;
-    	if(brush == 1 || brush == 2) { // 1 = paintbrush, 2 = eraser
-            if (brush == 2) { // If eraser, set color to transparent
+    	if(brushStatus == 1 || brushStatus == 2) { // 1 = paintbrush, 2 = eraser
+            if (brushStatus == 2) { // If eraser, set color to transparent
                 paintCol = new Color(0, 0, 0, 0); // Transparent color
             }
             BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
@@ -165,8 +165,8 @@ public class MyCanvas extends JPanel {
     public void setCanvasState(int state){
         this.state = state;     
     }
-    public void setBrushMode(int state){
-        brushStatus = state; // Clarification on brush state - Built it into sooner rather than later as a way to track what the active brush mode is.
+    public void setBrushMode(int status){
+        brushStatus = status; // Clarification on brush state - Built it into sooner rather than later as a way to track what the active brush mode is.
     }
     public void setColorChosen(Color color){
         colorSel = color;

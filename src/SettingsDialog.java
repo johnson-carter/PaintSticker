@@ -1,7 +1,7 @@
 package src;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class SettingsDialog extends JDialog {
     /**
@@ -36,7 +36,7 @@ public class SettingsDialog extends JDialog {
         inputPanel.add(layoutDropdown);
 
         JButton applyButton = new JButton("Apply");
-        applyButton.addActionListener(e -> {
+        applyButton.addActionListener(_ -> {
             String theme = (String) themeDropdown.getSelectedItem();
             String layout = (String) layoutDropdown.getSelectedItem();
 

@@ -128,7 +128,7 @@ public class App{
         topTray.add(backgroundColorButton);
 
         //Brush Size Selector
-        Integer[] brushSizesList = {1, 2, 5, 10, 15, 30};
+        Integer[] brushSizesList = {1, 2, 5, 10, 15, 30, 50, 100, 150, 200};
         JComboBox<Integer> brushSizeSelector = new JComboBox<>(brushSizesList);
         brushSizeSelector.setSelectedIndex(4);
         topTray.add(brushSizeSelector);
@@ -216,13 +216,13 @@ public class App{
         
 
         //Undo Button
-        undoButton.addActionListener(e -> {
+        undoButton.addActionListener(_ -> {
            canvas.undoAction();
            canvas.repaint();    //Important for displaying any input that edits the canvas
         });
 
         //Brush Button
-        brush.addActionListener(e -> {
+        brush.addActionListener(_ -> {
             brush.setIcon(brushHighlighted);
             eraser.setIcon(eraserIcon);
             textField.setForeground(sysDark);
@@ -231,7 +231,7 @@ public class App{
         });
 
         //Eraser Button 
-        eraser.addActionListener(e -> {
+        eraser.addActionListener(_ -> {
             brush.setIcon(brushIcon);
             eraser.setIcon(eraserHighlighted);
             textField.setForeground(sysDark);
@@ -239,7 +239,7 @@ public class App{
             setBrushMode(2);
         });
 
-        textField.addActionListener(e -> {
+        textField.addActionListener(_ -> {
             brush.setIcon(brushIcon);
             eraser.setIcon(eraserIcon);
             textField.setForeground(accent1);
@@ -248,7 +248,7 @@ public class App{
         });
 
         //Color Selector
-        selectColor.addActionListener(e -> {
+        selectColor.addActionListener(_ -> {
             Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.black);
             selectedColor = colorChosen; // Update the static variable
             selectColor.setBackground(selectedColor);
@@ -258,7 +258,7 @@ public class App{
         });
 
         // Background Color Selector
-        backgroundColorButton.addActionListener(e -> {
+        backgroundColorButton.addActionListener(_ -> {
             Color colorChosen = JColorChooser.showDialog(null, "Pick Background Color", Color.white);
             if (colorChosen != null) {
                 backgroundColorButton.setBackground(colorChosen);
@@ -267,7 +267,7 @@ public class App{
         });
 
         //Brush Size Selector
-        brushSizeSelector.addActionListener(e -> {
+        brushSizeSelector.addActionListener(_ -> {
             Integer bSizeSelected = (int) brushSizeSelector.getSelectedItem();
             canvas.chooseSize(bSizeSelected);
             
@@ -283,7 +283,7 @@ public class App{
             @Override
             public void mousePressed(MouseEvent e){  //Determines when click starts
                  canvas.startNewGroup();
-                 canvas.newStroke(e.getX(), e.getY(), getBrushMode());
+                 canvas.newStroke(e.getX(), e.getY());
                  canvas.repaint();
             }
             @Override
@@ -295,7 +295,7 @@ public class App{
         canvas.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e){
-                canvas.newStroke(e.getX(), e.getY(), getBrushMode());
+                canvas.newStroke(e.getX(), e.getY());
                 canvas.repaint();
             } 
         });
@@ -307,14 +307,14 @@ public class App{
         
         // ** Not yet implemented ** TODO --- Sidebar
 
-        newButton.addActionListener(e -> {
+        newButton.addActionListener(_ -> {
             canvas.clearAll();
             canvas.importImage();
         });
-        fileButton.addActionListener(e -> {
+        fileButton.addActionListener(_ -> {
             canvas.exportImage();
         });
-        settingButton.addActionListener(e -> {
+        settingButton.addActionListener(_ -> {
             SettingsDialog settingsDialog = new SettingsDialog(window, (theme, layout) -> {
                 System.out.println("Theme selected: " + theme);
                 System.out.println("Layout selected: " + layout);

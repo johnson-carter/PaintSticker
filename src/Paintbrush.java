@@ -3,13 +3,12 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 
 class Paintbrush  {
-    private Graphics g;
-    private BufferedImage moose;
+    private final Graphics g;
+    //private BufferedImage moose;
 
     public Paintbrush(Graphics graphics){
         g = graphics;
