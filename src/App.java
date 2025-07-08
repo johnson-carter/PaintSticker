@@ -118,6 +118,8 @@ public class App {
         Integer[] brushSizesList = {1, 2, 5, 10, 15, 30, 50, 100, 150, 200};
         JComboBox<Integer> brushSizeSelector = new JComboBox<>(brushSizesList);
         brushSizeSelector.setSelectedIndex(4);
+        brushSizeSelector.setEditable(true);
+        brushSizeSelector.setPreferredSize(new Dimension(100, 30));
         topTray.add(brushSizeSelector);
 
         //Some alignment and settings for the TopTray

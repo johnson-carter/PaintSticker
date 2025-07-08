@@ -34,7 +34,6 @@ public class MyCanvas extends JPanel {
 	// These all receive a corresponding value from toolkit inputs
     private List<List<BrushStroke>> totalStrokes = new ArrayList<>();
     private List<BrushStroke> strokes = new ArrayList<>();
-    private int state = 1;
     private int brushStatus = 1; // 1 = paintbrush, 2 = eraser, etc.
     private int size = 15;
     private Color colorSel = Color.black;
@@ -161,9 +160,6 @@ public class MyCanvas extends JPanel {
     public void clearAll(){
         totalStrokes.clear();
         repaint();
-    }
-    public void setCanvasState(int state){
-        this.state = state;     
     }
     public void setBrushMode(int status){
         brushStatus = status; // Clarification on brush state - Built it into sooner rather than later as a way to track what the active brush mode is.

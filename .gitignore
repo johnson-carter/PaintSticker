@@ -6,3 +6,5 @@ src/CanvasSettingsDialog.class
 src/Paintbrush.class
 src/MyCanvas.class
 src/App.class
+src/App.class
+*.class
