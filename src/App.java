@@ -97,6 +97,16 @@ public class App {
         textField.setForeground(sysDark);
         topTray.add(textField);
 
+        // Line Tool Button
+        JButton lineButton = new JButton("/");
+        lineButton.setFont(new Font("Verdana", Font.BOLD, 16));
+        lineButton.setPreferredSize(new Dimension(30, 30));
+        lineButton.setBackground(sysLight);
+        lineButton.setFocusPainted(false);
+        lineButton.setBorder(new LineBorder(sysDark, 2));
+        lineButton.setForeground(sysDark);
+        topTray.add(lineButton);
+
         //Color Selector
         JButton selectColor = new JButton("Select Color");
         selectColor.setFont(new Font("Verdana", Font.PLAIN, 12));
@@ -108,7 +118,7 @@ public class App {
         topTray.add(selectColor);
 
         // Background Color Selector
-        JButton backgroundColorButton = new JButton("Background");
+        JButton backgroundColorButton = new JButton("Image Setup");
         backgroundColorButton.setFont(new Font("Verdana", Font.PLAIN, 12));
         backgroundColorButton.setPreferredSize(new Dimension(120,30));
         backgroundColorButton.setBackground(Color.white);
@@ -183,6 +193,23 @@ public class App {
         window.add(canvas);
         window.add(sideBar, BorderLayout.WEST);
         window.add(topTray, BorderLayout.NORTH);
+        
+        // --- Add status bar for zoom and coordinates ---
+        JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        statusBar.setBackground(sysDark);
+        JLabel zoomLabel = new JLabel("Zoom: 100%");
+        zoomLabel.setForeground(Color.white);
+        JLabel coordLabel = new JLabel("X: 0, Y: 0");
+        coordLabel.setForeground(Color.white);
+        JSlider zoomSlider = new JSlider(10, 400, 100); // 10% to 400%
+        zoomSlider.setBackground(sysDark);
+        zoomSlider.setPreferredSize(new Dimension(120, 15));
+        statusBar.add(zoomLabel);
+        statusBar.add(zoomSlider);
+        statusBar.add(coordLabel);
+        
+        window.add(statusBar, BorderLayout.SOUTH);
+        
         window.pack();
         window.setResizable(true);
         window.setMinimumSize(new Dimension(1000, 500));
@@ -232,6 +259,20 @@ public class App {
             setBrushMode(3);
         });
 
+        // Line Tool Button
+        lineButton.addActionListener(a -> {
+            brush.setIcon(brushIcon);
+            brush.setBackground(sysLight);
+            eraser.setIcon(eraserIcon);
+            eraser.setBackground(sysLight);
+            textField.setForeground(sysDark);
+            textField.setBackground(sysLight);
+            lineButton.setForeground(accent1);
+            lineButton.setBackground(sysDark);
+            canvas.setBrushMode(4);
+            setBrushMode(4);
+        });
+
         //Color Selector
         selectColor.addActionListener(a -> {
             Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.black);
@@ -246,14 +287,21 @@ public class App {
         // Background Color Selector
         backgroundColorButton.addActionListener(a -> {
             CanvasSettingsDialog dialog = new CanvasSettingsDialog(window, canvas.getWidth(), canvas.getHeight(), canvas.getBackground());
+            JCheckBox transparentBox = new JCheckBox("Transparent Background");
+            // Add the checkbox directly to the dialog, not by getComponent(0)
+            dialog.add(transparentBox, BorderLayout.SOUTH);
+            dialog.pack();
             dialog.setVisible(true);
 
             if (dialog.isApproved()) {
                 Color colorChosen = dialog.getSelectedColor();
                 int width = dialog.getCanvasWidth();
                 int height = dialog.getCanvasHeight();
+                if (transparentBox.isSelected()) {
+                    colorChosen = new Color(0, 0, 0, 0); // Fully transparent
+                }
                 backgroundColorButton.setBackground(colorChosen);
-                backgroundColorButton.setForeground(getContrastColor(colorChosen)); // <-- update foreground
+                backgroundColorButton.setForeground(getContrastColor(colorChosen));
                 canvas.setBackgroundColor(colorChosen);
                 canvas.setPreferredSize(new Dimension(width, height));
                 canvas.revalidate();
@@ -272,12 +320,16 @@ public class App {
         //Mouse Input Grabber
         canvas.addMouseListener(new MouseAdapter() {
             JTextField activeTextField = null;
+            Point lineStart = null;
+            boolean drawingLine = false;
 
             private void commitText(MyCanvas canvas, JTextField textField) {
                 if (textField != null) {
                     String input = textField.getText();
                     if (input != null && !input.trim().isEmpty()) {
-                        canvas.addTextStroke(textField.getX(), textField.getY() + textField.getHeight() - 5, input.trim());
+                        // Convert to image coordinates for text placement
+                        Point imgPt = canvas.toImageCoords(new Point(textField.getX(), textField.getY() + textField.getHeight() - 5));
+                        canvas.addTextStroke(imgPt.x, imgPt.y, input.trim());
                     }
                     canvas.remove(textField);
                     canvas.repaint();
@@ -287,6 +339,7 @@ public class App {
 
             @Override
             public void mousePressed(MouseEvent e){
+                Point imgPt = canvas.toImageCoords(e.getPoint());
                 if (getBrushMode() == 3) {
                     if (activeTextField != null) {
                         return;
@@ -297,7 +350,10 @@ public class App {
                     textFieldInput.setBackground(new Color(255,255,255,180));
                     textFieldInput.setBorder(BorderFactory.createLineBorder(accent1));
                     int fieldHeight = brushSizeSelected * 2;
-                    textFieldInput.setBounds(e.getX(), e.getY(), window.getWidth() - e.getX(), fieldHeight);
+                    // Place the text field at the correct zoomed position
+                    int x = (int)(imgPt.x * canvas.getZoom());
+                    int y = (int)(imgPt.y * canvas.getZoom());
+                    textFieldInput.setBounds(x, y, window.getWidth() - x, fieldHeight);
                     canvas.setLayout(null);
                     canvas.add(textFieldInput);
                     textFieldInput.requestFocusInWindow();
@@ -310,14 +366,25 @@ public class App {
                             commitText(canvas, textFieldInput);
                         }
                     });
+                } else if (getBrushMode() == 4) {
+                    lineStart = imgPt;
+                    drawingLine = true;
+                    canvas.setLinePreview(lineStart, lineStart, selectedColor, brushSizeSelected);
                 } else {
                     canvas.startNewGroup();
-                    canvas.newStroke(e.getX(), e.getY());
+                    canvas.newStroke(imgPt.x, imgPt.y);
                     canvas.repaint();
                 }
             }
             @Override
             public void mouseReleased(MouseEvent e){
+                if (getBrushMode() == 4 && drawingLine && lineStart != null) {
+                    Point imgPt = canvas.toImageCoords(e.getPoint());
+                    canvas.addLineStroke(lineStart, imgPt, selectedColor, brushSizeSelected);
+                    canvas.clearLinePreview();
+                    drawingLine = false;
+                    lineStart = null;
+                }
                 canvas.repaint();
             }
         });
@@ -326,8 +393,19 @@ public class App {
         canvas.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e){
-                canvas.newStroke(e.getX(), e.getY());
-                canvas.repaint();
+                Point imgPt = canvas.toImageCoords(e.getPoint());
+                if (getBrushMode() == 4) {
+                    // Update preview line to follow the cursor
+                    canvas.setLinePreview(canvas.getLinePreviewStart(), imgPt, selectedColor, brushSizeSelected);
+                } else {
+                    canvas.newStroke(imgPt.x, imgPt.y);
+                    canvas.repaint();
+                }
+            }
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Point p = canvas.toImageCoords(e.getPoint());
+                coordLabel.setText("X: " + p.x + ", Y: " + p.y);
             }
         });
 
@@ -346,6 +424,27 @@ public class App {
                 System.out.println("Layout selected: " + layout);
             });
             settingsDialog.setVisible(true);
+        });
+        
+        // --- Zoom slider logic ---
+        zoomSlider.addChangeListener(e -> {
+            int zoom = zoomSlider.getValue();
+            zoomLabel.setText("Zoom: " + zoom + "%");
+            canvas.setZoom(zoom / 100.0);
+        });
+
+        // --- Mouse coordinate display ---
+        canvas.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Point p = canvas.toImageCoords(e.getPoint());
+                coordLabel.setText("X: " + p.x + ", Y: " + p.y);
+            }
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Point p = canvas.toImageCoords(e.getPoint());
+                coordLabel.setText("X: " + p.x + ", Y: " + p.y);
+            }
         });
     }
 

@@ -136,6 +136,8 @@ class Paintbrush  {
     public void drawStrokes(List<List<BrushStroke>> inList){
         for (List<BrushStroke> group : inList) {
             for (BrushStroke stroke : group) {
+                // Skip strokes at (0,0)
+                if (stroke.getXval() == 0 && stroke.getYval() == 0) continue;
                 if (stroke.getType() == BrushStroke.TYPE_TEXT) {
                     g.setColor(stroke.getColor());
                     g.setFont(new java.awt.Font("Verdana", java.awt.Font.BOLD, stroke.getSize() * 2));
