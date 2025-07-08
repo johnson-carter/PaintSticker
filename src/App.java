@@ -104,7 +104,7 @@ public class App {
         selectColor.setBackground(selectedColor);
         selectColor.setFocusPainted(false);
         selectColor.setBorder(new LineBorder(sysDark, 2));
-        selectColor.setForeground(sysLight);
+        selectColor.setForeground(Color.white);
         topTray.add(selectColor);
 
         // Background Color Selector
@@ -114,7 +114,7 @@ public class App {
         backgroundColorButton.setBackground(Color.white);
         backgroundColorButton.setFocusPainted(false);
         backgroundColorButton.setBorder(new LineBorder(sysDark, 2));
-        backgroundColorButton.setForeground(sysLight);
+        backgroundColorButton.setForeground(Color.black);
         topTray.add(backgroundColorButton);
 
         //Brush Size Selector
@@ -240,6 +240,7 @@ public class App {
             if (colorChosen != null) {
                 canvas.setColorChosen(colorChosen);
             }
+            selectColor.setForeground(getContrastColor(colorChosen)); // <-- update foreground
         });
 
         // Background Color Selector
@@ -252,6 +253,7 @@ public class App {
                 int width = dialog.getCanvasWidth();
                 int height = dialog.getCanvasHeight();
                 backgroundColorButton.setBackground(colorChosen);
+                backgroundColorButton.setForeground(getContrastColor(colorChosen)); // <-- update foreground
                 canvas.setBackgroundColor(colorChosen);
                 canvas.setPreferredSize(new Dimension(width, height));
                 canvas.revalidate();
@@ -295,7 +297,7 @@ public class App {
                     textFieldInput.setBackground(new Color(255,255,255,180));
                     textFieldInput.setBorder(BorderFactory.createLineBorder(accent1));
                     int fieldHeight = brushSizeSelected * 2;
-                    textFieldInput.setBounds(e.getX(), e.getY(), 300, fieldHeight);
+                    textFieldInput.setBounds(e.getX(), e.getY(), window.getWidth() - e.getX(), fieldHeight);
                     canvas.setLayout(null);
                     canvas.add(textFieldInput);
                     textFieldInput.requestFocusInWindow();
@@ -349,4 +351,10 @@ public class App {
 
     public static void setBrushMode(int mode) {brushMode = mode;}
     public static int getBrushMode(){return brushMode;}
+    // Add this helper method to App class (outside main)
+    private static Color getContrastColor(Color color) {
+        // Calculate luminance
+        double luminance = (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
+        return luminance > 0.5 ? Color.black : Color.white;
+    }
 }
