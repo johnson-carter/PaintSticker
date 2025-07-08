@@ -1,5 +1,5 @@
 # PaintSticker
-  Welcome to PaintSticker, an open-source and free to use product. Create digital masterpieces, social media and enterprise graphics, templates, forms, and more. Lightweight execution, compact codebase, steadfast reliability, and user privacy were key development objectives-- that I can safely say have been achieved with this version.   
+  Welcome to PaintSticker, an open-source and free to use product. A lightweight but powerful and feature-packed image editing tool. Lightweight execution, compact codebase, steadfast reliability, and user privacy were key development objectives- see for yourself.  
 
 # Features:
 - Import your own images and save them when you're done or start from scratch.
