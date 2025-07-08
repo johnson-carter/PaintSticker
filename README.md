@@ -18,4 +18,4 @@ In the root folder, locate and run the '**PaintSticker.jar**' file.
 - Step 3:
 Paint away!
 
-* _Creativity not included_ *
+ _Creativity not included_ *
