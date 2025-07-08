@@ -9,8 +9,9 @@ import javax.swing.border.MatteBorder;
 
 
 public class App {
-    private static int brushMode;
+    private static int brushMode = 1;
     private static Color selectedColor = Color.black;
+    private static int brushSizeSelected = 15;
     // Simple Dark Theme
     private final static Color LIGHTDARK = new Color(100, 100, 100);
     private final static Color REGULARDARK = new Color(60, 60, 60);
@@ -28,6 +29,7 @@ public class App {
     static Color accent2 = REDORANGE;
     static Color accent3 = LIGHTGREEN;
 
+
     public static void main(String[] args) {
 
         setBrushMode(1);
@@ -36,6 +38,7 @@ public class App {
         canvas.setBrushMode(1);
         JPanel topTray = new JPanel();
         JPanel sideBar = new JPanel();
+    
 
         JFrame window = new JFrame("PaintSticker");
 
@@ -259,8 +262,8 @@ public class App {
 
         //Brush Size Selector
         brushSizeSelector.addActionListener(a -> {
-            Integer bSizeSelected = (int) brushSizeSelector.getSelectedItem();
-            canvas.chooseSize(bSizeSelected);
+            brushSizeSelected = (int) brushSizeSelector.getSelectedItem();
+            canvas.chooseSize(brushSizeSelected);
         });
 
 
@@ -287,12 +290,12 @@ public class App {
                         return;
                     }
                     JTextField textFieldInput = new JTextField();
-                    textFieldInput.setFont(new Font("Verdana", Font.BOLD, canvas.getFont().getSize() * 2));
+                    textFieldInput.setFont(new Font("Verdana", Font.BOLD, brushSizeSelected * 2));
                     textFieldInput.setForeground(canvas.getForeground());
                     textFieldInput.setBackground(new Color(255,255,255,180));
                     textFieldInput.setBorder(BorderFactory.createLineBorder(accent1));
-                    int fieldHeight = textFieldInput.getFont().getSize() + 10;
-                    textFieldInput.setBounds(e.getX(), e.getY(), 200, fieldHeight);
+                    int fieldHeight = brushSizeSelected * 2;
+                    textFieldInput.setBounds(e.getX(), e.getY(), 300, fieldHeight);
                     canvas.setLayout(null);
                     canvas.add(textFieldInput);
                     textFieldInput.requestFocusInWindow();

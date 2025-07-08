@@ -40,77 +40,6 @@ public class MyCanvas extends JPanel {
     private BufferedImage backgroundImage = null;
     private Color backgroundColor = Color.white;
 
-    public void importImage() {
-	    JFileChooser chooser = new JFileChooser();
-	    chooser.setFileFilter(new FileNameExtensionFilter(
-	        "Image files", ImageIO.getReaderFileSuffixes()));
-	    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-	        try {
-	            File file = chooser.getSelectedFile();
-	            backgroundImage = ImageIO.read(file);
-	            // resize canvas if you like:
-	            setPreferredSize(new Dimension(
-	                backgroundImage.getWidth(),
-	                backgroundImage.getHeight()));
-	            revalidate();
-	            repaint();
-	        } catch (IOException ex) {
-	            JOptionPane.showMessageDialog(this,
-	                "Failed to load image:\n" + ex.getMessage(),
-	                "Load Error", JOptionPane.ERROR_MESSAGE);
-	        }
-	    }
-	}
-	
-	public void exportImage() {
-	    int w = getWidth(), h = getHeight();
-	    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-	    Graphics2D g2 = out.createGraphics();
-	    // Draw background color rectangle
-	    Paintbrush exportBrush = new Paintbrush(g2);
-	    exportBrush.drawBackgroundRect(backgroundColor, w, h);
-	    // draw background image if present
-	    if (backgroundImage != null) {
-	        g2.drawImage(backgroundImage, 0, 0, null);
-	    }
-	    // do NOT fill with white here, so transparency is preserved
-
-	    // draw your strokes
-	    for (List<BrushStroke> group : totalStrokes) {
-	        for (BrushStroke s : group) {
-	            Color c = s.getColor();
-	            if (c == null || c.getAlpha() == 0) {
-	                // Eraser: clear with AlphaComposite
-	                g2.setComposite(java.awt.AlphaComposite.Clear);
-	                g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
-	                g2.setComposite(java.awt.AlphaComposite.SrcOver);
-	            } else {
-	                g2.setComposite(java.awt.AlphaComposite.SrcOver);
-	                g2.setColor(c);
-	                g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
-	            }
-	        }
-	    }
-	    g2.dispose();
-	
-	    // save to file
-	    JFileChooser chooser = new JFileChooser();
-	    chooser.setFileFilter(new FileNameExtensionFilter("PNG Image", "png"));
-	    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-	        File file = chooser.getSelectedFile();
-	        if (!file.getName().toLowerCase().endsWith(".png")) {
-	            file = new File(file.getAbsolutePath() + ".png");
-	        }
-	        try {
-	            ImageIO.write(out, "PNG", file);
-	        } catch (IOException ex) {
-	            JOptionPane.showMessageDialog(this,
-	                "Failed to save image:\n" + ex.getMessage(),
-	                "Save Error", JOptionPane.ERROR_MESSAGE);
-	        }
-	    }
-	}
-
     /////////////////////////
     // Methods for generating content from App.java controlled inputs
     /////////////////////////
@@ -209,7 +138,78 @@ public class MyCanvas extends JPanel {
         repaint();
     }
 
-        }
+    public void importImage() {
+	    JFileChooser chooser = new JFileChooser();
+	    chooser.setFileFilter(new FileNameExtensionFilter(
+	        "Image files", ImageIO.getReaderFileSuffixes()));
+	    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+	        try {
+	            File file = chooser.getSelectedFile();
+	            backgroundImage = ImageIO.read(file);
+	            // resize canvas if you like:
+	            setPreferredSize(new Dimension(
+	                backgroundImage.getWidth(),
+	                backgroundImage.getHeight()));
+	            revalidate();
+	            repaint();
+	        } catch (IOException ex) {
+	            JOptionPane.showMessageDialog(this,
+	                "Failed to load image:\n" + ex.getMessage(),
+	                "Load Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+	
+	public void exportImage() {
+	    int w = getWidth(), h = getHeight();
+	    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2 = out.createGraphics();
+	    // Draw background color rectangle
+	    Paintbrush exportBrush = new Paintbrush(g2);
+	    exportBrush.drawBackgroundRect(backgroundColor, w, h);
+	    // draw background image if present
+	    if (backgroundImage != null) {
+	        g2.drawImage(backgroundImage, 0, 0, null);
+	    }
+	    // do NOT fill with white here, so transparency is preserved
+
+	    // draw your strokes
+	    for (List<BrushStroke> group : totalStrokes) {
+	        for (BrushStroke s : group) {
+	            Color c = s.getColor();
+	            if (c == null || c.getAlpha() == 0) {
+	                // Eraser: clear with AlphaComposite
+	                g2.setComposite(java.awt.AlphaComposite.Clear);
+	                g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+	                g2.setComposite(java.awt.AlphaComposite.SrcOver);
+	            } else {
+	                g2.setComposite(java.awt.AlphaComposite.SrcOver);
+	                g2.setColor(c);
+	                g2.fillOval(s.getXval(), s.getYval(), s.getSize(), s.getSize());
+	            }
+	        }
+	    }
+	    g2.dispose();
+	
+	    // save to file
+	    JFileChooser chooser = new JFileChooser();
+	    chooser.setFileFilter(new FileNameExtensionFilter("PNG Image", "png"));
+	    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+	        File file = chooser.getSelectedFile();
+	        if (!file.getName().toLowerCase().endsWith(".png")) {
+	            file = new File(file.getAbsolutePath() + ".png");
+	        }
+	        try {
+	            ImageIO.write(out, "PNG", file);
+	        } catch (IOException ex) {
+	            JOptionPane.showMessageDialog(this,
+	                "Failed to save image:\n" + ex.getMessage(),
+	                "Save Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+}
 
 
 
