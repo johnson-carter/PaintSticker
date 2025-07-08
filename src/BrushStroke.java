@@ -8,16 +8,33 @@ import java.awt.Color;
  */
 
 public class BrushStroke {
+    public static final int TYPE_NORMAL = 1;
+    public static final int TYPE_TEXT = 2;
+
     private int x;
     private int y;
     private Color color;
     private int size;
+    private int type = TYPE_NORMAL;
+    private String text;
 
+    // Normal stroke constructor
     public BrushStroke(int x, int y, Color color, int size){
         this.x = x;
         this.y = y;
         this.color = color;
         this.size = size;
+        this.type = TYPE_NORMAL;
+    }
+
+    // Text stroke constructor
+    public BrushStroke(int x, int y, Color color, int size, String text){
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.size = size;
+        this.type = TYPE_TEXT;
+        this.text = text;
     }
 
     //Self explanatory, but allows us to access values
@@ -33,5 +50,10 @@ public class BrushStroke {
     public int getSize(){
         return size;
     }
-
+    public int getType() {
+        return type;
+    }
+    public String getText() {
+        return text;
+    }
 }

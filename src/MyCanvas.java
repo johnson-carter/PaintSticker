@@ -178,6 +178,11 @@ public class MyCanvas extends JPanel {
         this.backgroundColor = color;
         repaint();
     }
+    public void setCanvasSize(int width, int height) {
+        setPreferredSize(new Dimension(width, height));
+        revalidate();
+        repaint();
+    }
     
     //Constructor, could add arguments? idk why
     public MyCanvas(){
@@ -200,6 +205,13 @@ public class MyCanvas extends JPanel {
         }
         myBrush.drawStrokes(totalStrokes);
     }      
+    public void addTextStroke(int x, int y, String text) {
+        BrushStroke textStroke = new BrushStroke(x, y, colorSel, size, text);
+        List<BrushStroke> textGroup = new ArrayList<>();
+        textGroup.add(textStroke);
+        totalStrokes.add(textGroup);
+        repaint();
+    }
 
         }
 

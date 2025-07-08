@@ -134,16 +134,20 @@ class Paintbrush  {
     }
 
     public void drawStrokes(List<List<BrushStroke>> inList){
-        
-        //DEBUG - Good to this point
         for (List<BrushStroke> group : inList) {
             for (BrushStroke stroke : group) {
-                Color c = stroke.getColor();
-                if (c == null || (c.getAlpha() == 0)) {
-                    eraseAt(stroke.getXval() - (stroke.getSize() / 2), stroke.getYval() - (stroke.getSize() / 2), stroke.getSize());
+                if (stroke.getType() == BrushStroke.TYPE_TEXT) {
+                    g.setColor(stroke.getColor());
+                    g.setFont(new java.awt.Font("Verdana", java.awt.Font.BOLD, stroke.getSize() * 2));
+                    g.drawString(stroke.getText(), stroke.getXval(), stroke.getYval());
                 } else {
-                    g.setColor(c);
-                    g.fillOval(stroke.getXval() - (stroke.getSize() / 2), stroke.getYval() - (stroke.getSize() / 2), stroke.getSize(), stroke.getSize());
+                    Color c = stroke.getColor();
+                    if (c == null || (c.getAlpha() == 0)) {
+                        eraseAt(stroke.getXval() - (stroke.getSize() / 2), stroke.getYval() - (stroke.getSize() / 2), stroke.getSize());
+                    } else {
+                        g.setColor(c);
+                        g.fillOval(stroke.getXval() - (stroke.getSize() / 2), stroke.getYval() - (stroke.getSize() / 2), stroke.getSize(), stroke.getSize());
+                    }
                 }
             }
         }
@@ -172,4 +176,4 @@ class Paintbrush  {
         }
     }
 }
-        
+
