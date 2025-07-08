@@ -36,7 +36,7 @@ public class SettingsDialog extends JDialog {
         inputPanel.add(layoutDropdown);
 
         JButton applyButton = new JButton("Apply");
-        applyButton.addActionListener(_ -> {
+        applyButton.addActionListener(a -> {
             String theme = (String) themeDropdown.getSelectedItem();
             String layout = (String) layoutDropdown.getSelectedItem();
 

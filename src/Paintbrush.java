@@ -122,15 +122,6 @@ class Paintbrush  {
         }
     }*/
 
-    // Draws a normal brush stroke (opaque color)
-    public void startStroke(int x, int y, Color color, int size){
-        if (color == null || (color.getAlpha() == 0)) {
-            eraseAt(x, y, size);
-        } else {
-            g.setColor(color);
-            g.fillOval(x, y, size, size);
-        }
-    }
 
     // Erase (make transparent) at the given location/size
     private void eraseAt(int x, int y, int size) {
@@ -149,10 +140,10 @@ class Paintbrush  {
             for (BrushStroke stroke : group) {
                 Color c = stroke.getColor();
                 if (c == null || (c.getAlpha() == 0)) {
-                    eraseAt(stroke.getXval(), stroke.getYval(), stroke.getSize());
+                    eraseAt(stroke.getXval() - (stroke.getSize() / 2), stroke.getYval() - (stroke.getSize() / 2), stroke.getSize());
                 } else {
                     g.setColor(c);
-                    g.fillOval(stroke.getXval(), stroke.getYval(), stroke.getSize(), stroke.getSize());
+                    g.fillOval(stroke.getXval() - (stroke.getSize() / 2), stroke.getYval() - (stroke.getSize() / 2), stroke.getSize(), stroke.getSize());
                 }
             }
         }
