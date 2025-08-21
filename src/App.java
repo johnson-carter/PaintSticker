@@ -13,21 +13,7 @@ public class App {
     private static Color selectedColor = Color.black;
     private static int brushSizeSelected = 15;
     // Simple Dark Theme
-    private final static Color LIGHTDARK = new Color(100, 100, 100);
-    private final static Color REGULARDARK = new Color(60, 60, 60);
-    private final static Color DARKDARK = new Color(30, 30, 30);
 
-    private final static Color SKYBLUE = new Color(135, 206, 250); // Light Sky Blue
-    private final static Color REDORANGE = new Color(255, 69, 0); // Red-Orange
-    private final static Color LIGHTGREEN = new Color(144, 238, 144); // Light Green
-
-    static Color sysLight = LIGHTDARK;
-    static Color sysColor = REGULARDARK;
-    static Color sysDark = DARKDARK;
-
-    static Color accent1 = SKYBLUE;
-    static Color accent2 = REDORANGE;
-    static Color accent3 = LIGHTGREEN;
 
 
     public static void main(String[] args) {
@@ -41,13 +27,13 @@ public class App {
     
 
         JFrame window = new JFrame("PaintSticker");
-
         Image scaledImage;
 
         //PaintSticker logo
         ImageIcon logoImg = new ImageIcon("images/logo.png");
         scaledImage = logoImg.getImage().getScaledInstance(50, 50, 0);
         logoImg.setImage(scaledImage);
+        window.setIconImage(scaledImage);
         JLabel logo = new JLabel(logoImg);
         topTray.add(logo);
 
@@ -56,16 +42,16 @@ public class App {
         scaledImage = undoIcon.getImage().getScaledInstance(20, 20, 0);
         undoIcon.setImage(scaledImage);
         JButton undoButton = new JButton(undoIcon);
-        undoButton.setBackground(accent2);
+        undoButton.setBackground(Constants.accent2);
         undoButton.setFocusPainted(false);
-        undoButton.setBorder(new LineBorder(sysDark, 2));
+        undoButton.setBorder(new LineBorder(Constants.sysDark, 2));
         undoButton.setPreferredSize(new Dimension(30, 30));
         topTray.add(undoButton);
 
         // Toolkit break
         JLabel toolkitLabel = new JLabel(" Select Tool: ");
         toolkitLabel.setFont(new Font("Verdana", Font.BOLD, 12));
-        toolkitLabel.setForeground(accent1);
+        toolkitLabel.setForeground(Constants.accent1);
         topTray.add(toolkitLabel);
 
         //Brush Selector
@@ -74,8 +60,8 @@ public class App {
         JButton brush = new JButton(brushHighlighted);
         brush.setPreferredSize(new Dimension(30, 30));
         brush.setFocusPainted(false);
-        brush.setBorder(new LineBorder(sysDark, 2));
-        brush.setBackground(sysDark);
+        brush.setBorder(new LineBorder(Constants.sysDark, 2));
+        brush.setBackground(Constants.sysDark);
         topTray.add(brush);
 
         //Eraser Selector
@@ -83,28 +69,28 @@ public class App {
         ImageIcon eraserHighlighted = new ImageIcon("images/eraser2.png");
         JButton eraser = new JButton(eraserIcon);
         eraser.setPreferredSize(new Dimension(30, 30));
-        eraser.setBackground(sysLight);
+        eraser.setBackground(Constants.sysLight);
         eraser.setFocusPainted(false);
-        eraser.setBorder(new LineBorder(sysDark, 2));
+        eraser.setBorder(new LineBorder(Constants.sysDark, 2));
         topTray.add(eraser);
 
         JButton textField = new JButton("t|");
         textField.setFont(new Font("Verdana", Font.BOLD, 12));
         textField.setPreferredSize(new Dimension(30, 30));
-        textField.setBackground(sysLight);
+        textField.setBackground(Constants.sysLight);
         textField.setFocusPainted(false);
-        textField.setBorder(new LineBorder(sysDark, 2));
-        textField.setForeground(sysDark);
+        textField.setBorder(new LineBorder(Constants.sysDark, 2));
+        textField.setForeground(Constants.sysDark);
         topTray.add(textField);
 
         // Line Tool Button
         JButton lineButton = new JButton("/");
         lineButton.setFont(new Font("Verdana", Font.BOLD, 16));
         lineButton.setPreferredSize(new Dimension(30, 30));
-        lineButton.setBackground(sysLight);
+        lineButton.setBackground(Constants.sysLight);
         lineButton.setFocusPainted(false);
-        lineButton.setBorder(new LineBorder(sysDark, 2));
-        lineButton.setForeground(sysDark);
+        lineButton.setBorder(new LineBorder(Constants.sysDark, 2));
+        lineButton.setForeground(Constants.sysDark);
         topTray.add(lineButton);
 
         //Color Selector
@@ -113,7 +99,7 @@ public class App {
         selectColor.setPreferredSize(new Dimension(120,30));
         selectColor.setBackground(selectedColor);
         selectColor.setFocusPainted(false);
-        selectColor.setBorder(new LineBorder(sysDark, 2));
+        selectColor.setBorder(new LineBorder(Constants.sysDark, 2));
         selectColor.setForeground(Color.white);
         topTray.add(selectColor);
 
@@ -123,7 +109,7 @@ public class App {
         backgroundColorButton.setPreferredSize(new Dimension(120,30));
         backgroundColorButton.setBackground(Color.white);
         backgroundColorButton.setFocusPainted(false);
-        backgroundColorButton.setBorder(new LineBorder(sysDark, 2));
+        backgroundColorButton.setBorder(new LineBorder(Constants.sysDark, 2));
         backgroundColorButton.setForeground(Color.black);
         topTray.add(backgroundColorButton);
 
@@ -137,7 +123,7 @@ public class App {
 
         //Some alignment and settings for the TopTray
         FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
-        topTray.setBackground(sysLight);
+        topTray.setBackground(Constants.sysLight);
         topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
         topTray.setLayout(topLayout);
         topTray.setVisible(true);
@@ -147,7 +133,7 @@ public class App {
         topTray.setBorder(new CompoundBorder(topTrayBorder, topTrayPadding));
 
         //Sidebar properties
-        sideBar.setBackground(sysLight);
+        sideBar.setBackground(Constants.sysLight);
         sideBar.setPreferredSize(new Dimension(55, window.getHeight()));
         sideBar.setVisible(true);
         sideBar.setBorder(new MatteBorder(0,0,0,3, Color.black));
@@ -196,13 +182,13 @@ public class App {
         
         // --- Add status bar for zoom and coordinates ---
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        statusBar.setBackground(sysDark);
+        statusBar.setBackground(Constants.sysDark);
         JLabel zoomLabel = new JLabel("Zoom: 100%");
         zoomLabel.setForeground(Color.white);
         JLabel coordLabel = new JLabel("X: 0, Y: 0");
         coordLabel.setForeground(Color.white);
         JSlider zoomSlider = new JSlider(10, 400, 100); // 10% to 400%
-        zoomSlider.setBackground(sysDark);
+        zoomSlider.setBackground(Constants.sysDark);
         zoomSlider.setPreferredSize(new Dimension(120, 15));
         statusBar.add(zoomLabel);
         statusBar.add(zoomSlider);
@@ -227,11 +213,11 @@ public class App {
         //Brush Button
         brush.addActionListener(a -> {
             brush.setIcon(brushHighlighted);
-            brush.setBackground(sysDark);
+            brush.setBackground(Constants.sysDark);
             eraser.setIcon(eraserIcon);
-            eraser.setBackground(sysLight);
-            textField.setForeground(sysDark);
-            textField.setBackground(sysLight);
+            eraser.setBackground(Constants.sysLight);
+            textField.setForeground(Constants.sysDark);
+            textField.setBackground(Constants.sysLight);
             canvas.setBrushMode(1);
             setBrushMode(1);
         });
@@ -239,22 +225,22 @@ public class App {
         //Eraser Button
         eraser.addActionListener(a -> {
             brush.setIcon(brushIcon);
-            brush.setBackground(sysLight);
+            brush.setBackground(Constants.sysLight);
             eraser.setIcon(eraserHighlighted);
-            eraser.setBackground(sysDark);
-            textField.setForeground(sysDark);
-            textField.setBackground(sysLight);
+            eraser.setBackground(Constants.sysDark);
+            textField.setForeground(Constants.sysDark);
+            textField.setBackground(Constants.sysLight);
             canvas.setBrushMode(2);
             setBrushMode(2);
         });
 
         textField.addActionListener(a -> {
             brush.setIcon(brushIcon);
-            brush.setBackground(sysLight);
+            brush.setBackground(Constants.sysLight);
             eraser.setIcon(eraserIcon);
-            eraser.setBackground(sysLight);
-            textField.setForeground(accent1);
-            textField.setBackground(sysDark);
+            eraser.setBackground(Constants.sysLight);
+            textField.setForeground(Constants.accent1);
+            textField.setBackground(Constants.sysDark);
             canvas.setBrushMode(3);
             setBrushMode(3);
         });
@@ -262,13 +248,13 @@ public class App {
         // Line Tool Button
         lineButton.addActionListener(a -> {
             brush.setIcon(brushIcon);
-            brush.setBackground(sysLight);
+            brush.setBackground(Constants.sysLight);
             eraser.setIcon(eraserIcon);
-            eraser.setBackground(sysLight);
-            textField.setForeground(sysDark);
-            textField.setBackground(sysLight);
-            lineButton.setForeground(accent1);
-            lineButton.setBackground(sysDark);
+            eraser.setBackground(Constants.sysLight);
+            textField.setForeground(Constants.sysDark);
+            textField.setBackground(Constants.sysLight);
+            lineButton.setForeground(Constants.accent1);
+            lineButton.setBackground(Constants.sysDark);
             canvas.setBrushMode(4);
             setBrushMode(4);
         });
@@ -348,7 +334,7 @@ public class App {
                     textFieldInput.setFont(new Font("Verdana", Font.BOLD, brushSizeSelected * 2));
                     textFieldInput.setForeground(canvas.getForeground());
                     textFieldInput.setBackground(new Color(255,255,255,180));
-                    textFieldInput.setBorder(BorderFactory.createLineBorder(accent1));
+                    textFieldInput.setBorder(BorderFactory.createLineBorder(Constants.accent1));
                     int fieldHeight = brushSizeSelected * 2;
                     // Place the text field at the correct zoomed position
                     int x = (int)(imgPt.x * canvas.getZoom());
