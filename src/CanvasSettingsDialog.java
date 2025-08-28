@@ -4,7 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CanvasSettingsDialog extends JDialog {
-    private Color selectedColor;
+    /**
+	 * 
+	 */
+	private Color selectedColor;
     private int canvasWidth;
     private int canvasHeight;
     private boolean approved = false;
