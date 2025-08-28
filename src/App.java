@@ -123,7 +123,7 @@ public class App {
 
         //Some alignment and settings for the TopTray
         FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
-        topTray.setBackground(Constants.sysLight);
+        topTray.setBackground(Constants.sysColor);
         topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
         topTray.setLayout(topLayout);
         topTray.setVisible(true);
