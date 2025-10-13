@@ -1,4 +1,4 @@
-package src;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -205,13 +205,13 @@ public class App {
         // Button Logic
 
         //Undo Button
-        undoButton.addActionListener(a -> {
+        undoButton.addActionListener(_ -> {
             canvas.undoAction();
             canvas.repaint();
         });
 
         //Brush Button
-        brush.addActionListener(a -> {
+        brush.addActionListener(_ -> {
             brush.setIcon(brushHighlighted);
             brush.setBackground(Constants.sysDark);
             eraser.setIcon(eraserIcon);
@@ -223,7 +223,7 @@ public class App {
         });
 
         //Eraser Button
-        eraser.addActionListener(a -> {
+        eraser.addActionListener(_ -> {
             brush.setIcon(brushIcon);
             brush.setBackground(Constants.sysLight);
             eraser.setIcon(eraserHighlighted);
@@ -234,7 +234,7 @@ public class App {
             setBrushMode(2);
         });
 
-        textField.addActionListener(a -> {
+        textField.addActionListener(_ -> {
             brush.setIcon(brushIcon);
             brush.setBackground(Constants.sysLight);
             eraser.setIcon(eraserIcon);
@@ -246,7 +246,7 @@ public class App {
         });
 
         // Line Tool Button
-        lineButton.addActionListener(a -> {
+        lineButton.addActionListener(_ -> {
             brush.setIcon(brushIcon);
             brush.setBackground(Constants.sysLight);
             eraser.setIcon(eraserIcon);
@@ -260,7 +260,7 @@ public class App {
         });
 
         //Color Selector
-        selectColor.addActionListener(a -> {
+        selectColor.addActionListener(_ -> {
             Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.black);
             selectedColor = colorChosen;
             selectColor.setBackground(selectedColor);
@@ -271,7 +271,7 @@ public class App {
         });
 
         // Background Color Selector
-        backgroundColorButton.addActionListener(a -> {
+        backgroundColorButton.addActionListener(_ -> {
             CanvasSettingsDialog dialog = new CanvasSettingsDialog(window, canvas.getWidth(), canvas.getHeight(), canvas.getBackground());
             JCheckBox transparentBox = new JCheckBox("Transparent Background");
             // Add the checkbox directly to the dialog, not by getComponent(0)
@@ -297,7 +297,7 @@ public class App {
         });
 
         //Brush Size Selector
-        brushSizeSelector.addActionListener(a -> {
+        brushSizeSelector.addActionListener(_ -> {
             brushSizeSelected = (int) brushSizeSelector.getSelectedItem();
             canvas.chooseSize(brushSizeSelected);
         });
@@ -314,6 +314,7 @@ public class App {
                     String input = textField.getText();
                     if (input != null && !input.trim().isEmpty()) {
                         // Convert to image coordinates for text placement
+                        // ! TODO : Fix y-coordinate offset issue
                         Point imgPt = canvas.toImageCoords(new Point(textField.getX(), textField.getY() + textField.getHeight() - 5));
                         canvas.addTextStroke(imgPt.x, imgPt.y, input.trim());
                     }
@@ -345,7 +346,7 @@ public class App {
                     textFieldInput.requestFocusInWindow();
                     activeTextField = textFieldInput;
 
-                    textFieldInput.addActionListener(ev -> commitText(canvas, textFieldInput));
+                    textFieldInput.addActionListener(_ -> commitText(canvas, textFieldInput));
                     textFieldInput.addFocusListener(new FocusAdapter() {
                         @Override
                         public void focusLost(FocusEvent ev) {
@@ -397,14 +398,14 @@ public class App {
 
         // SideBar Button Logic
 
-        newButton.addActionListener(a -> {
+        newButton.addActionListener(_ -> {
             canvas.clearAll();
             canvas.importImage();
         });
-        fileButton.addActionListener(a -> {
+        fileButton.addActionListener(_ -> {
             canvas.exportImage();
         });
-        settingButton.addActionListener(a -> {
+        settingButton.addActionListener(_ -> {
             SettingsDialog settingsDialog = new SettingsDialog(window, (theme, layout) -> {
                 System.out.println("Theme selected: " + theme);
                 System.out.println("Layout selected: " + layout);
@@ -413,7 +414,7 @@ public class App {
         });
         
         // --- Zoom slider logic ---
-        zoomSlider.addChangeListener(e -> {
+        zoomSlider.addChangeListener(_ -> {
             int zoom = zoomSlider.getValue();
             zoomLabel.setText("Zoom: " + zoom + "%");
             canvas.setZoom(zoom / 100.0);

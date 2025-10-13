@@ -1,5 +1,3 @@
-package src;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -27,7 +25,7 @@ public class CanvasSettingsDialog extends JDialog {
         gbc.gridx = 0; gbc.gridy = 0;
         JButton colorButton = new JButton("Choose Color");
         colorButton.setBackground(selectedColor);
-        colorButton.addActionListener(e -> {
+        colorButton.addActionListener(_ -> {
             Color newColor = JColorChooser.showDialog(this, "Choose Background Color", selectedColor);
             if (newColor != null) {
                 selectedColor = newColor;
@@ -53,7 +51,7 @@ public class CanvasSettingsDialog extends JDialog {
         // Buttons
         JPanel buttonPanel = new JPanel();
         JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> {
+        okButton.addActionListener(_ -> {
             canvasWidth = (Integer)widthSpinner.getValue();
             canvasHeight = (Integer)heightSpinner.getValue();
             approved = true;
@@ -61,7 +59,7 @@ public class CanvasSettingsDialog extends JDialog {
         });
 
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(_ -> dispose());
 
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);

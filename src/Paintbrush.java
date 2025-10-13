@@ -1,7 +1,7 @@
-package src;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.List;
 
@@ -140,7 +140,7 @@ class Paintbrush  {
                 if (stroke.getXval() == 0 && stroke.getYval() == 0) continue;
                 if (stroke.getType() == BrushStroke.TYPE_TEXT) {
                     g.setColor(stroke.getColor());
-                    g.setFont(new java.awt.Font("Verdana", java.awt.Font.BOLD, stroke.getSize() * 2));
+                    g.setFont(new Font("Verdana", java.awt.Font.BOLD, stroke.getSize() * 2));
                     g.drawString(stroke.getText(), stroke.getXval(), stroke.getYval());
                 } else {
                     Color c = stroke.getColor();

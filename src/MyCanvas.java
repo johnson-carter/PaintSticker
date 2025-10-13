@@ -1,4 +1,3 @@
-package src;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -16,10 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-/*      
- *  MyCanvas Class - Interprets inputs and uses Paintbrush.java to 
- *  display all of the great artwork that your heart desires
- */
 
 
 public class MyCanvas extends JPanel {
@@ -57,7 +52,6 @@ public class MyCanvas extends JPanel {
     public void startNewGroup(){
         strokes = new ArrayList<>();
         totalStrokes.add(strokes);
-
     }
     //When the mouse is dragged it records a series of x, y pairs and adds them to our List of Lists
     public void newStroke(int x, int y){
