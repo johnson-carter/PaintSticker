@@ -1,305 +1,122 @@
-
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-
 
 public class App {
     private static int brushMode = 1;
     private static Color selectedColor = Color.black;
     private static int brushSizeSelected = 15;
-    // Simple Dark Theme
 
-
+    private static JFrame window;
+    private static MyCanvas canvas;
+    private static ToolBar toolBar;
+    private static SideBar sideBar;
+    private static StatusBar statusBar;
+    private static List<Themeable> themeables;
+    private static String currentLayout = "Standard";
 
     public static void main(String[] args) {
 
+        Theme.DARK.apply();
         setBrushMode(1);
 
-        MyCanvas canvas = new MyCanvas();
+        canvas = new MyCanvas();
         canvas.setBrushMode(1);
-        JPanel topTray = new JPanel();
-        JPanel sideBar = new JPanel();
-    
 
-        JFrame window = new JFrame("PaintSticker");
-        Image scaledImage;
+        window = new JFrame("PaintSticker");
 
-        //PaintSticker logo
-        ImageIcon logoImg = new ImageIcon("images/logo.png");
-        scaledImage = logoImg.getImage().getScaledInstance(50, 50, 0);
-        logoImg.setImage(scaledImage);
-        window.setIconImage(scaledImage);
-        JLabel logo = new JLabel(logoImg);
-        topTray.add(logo);
+        toolBar = new ToolBar(new ToolBar.ToolBarListener() {
+            @Override
+            public void onToolSelected(int mode) {
+                setBrushMode(mode);
+                canvas.setBrushMode(mode);
+            }
 
-        //Undo Button
-        ImageIcon undoIcon = new ImageIcon("images/undoIcon.png");
-        scaledImage = undoIcon.getImage().getScaledInstance(20, 20, 0);
-        undoIcon.setImage(scaledImage);
-        JButton undoButton = new JButton(undoIcon);
-        undoButton.setBackground(Constants.accent2);
-        undoButton.setFocusPainted(false);
-        undoButton.setBorder(new LineBorder(Constants.sysDark, 2));
-        undoButton.setPreferredSize(new Dimension(30, 30));
-        topTray.add(undoButton);
+            @Override
+            public void onUndo() {
+                canvas.undoAction();
+                canvas.repaint();
+            }
 
-        // Toolkit break
-        JLabel toolkitLabel = new JLabel(" Select Tool: ");
-        toolkitLabel.setFont(new Font("Verdana", Font.BOLD, 12));
-        toolkitLabel.setForeground(Constants.accent1);
-        topTray.add(toolkitLabel);
+            @Override
+            public void onColorChosen(Color color) {
+                selectedColor = color;
+                canvas.setColorChosen(color);
+            }
 
-        //Brush Selector
-        ImageIcon brushIcon = new ImageIcon("images/brushIcon.png");
-        ImageIcon brushHighlighted = new ImageIcon("images/brushIcon2.png");
-        JButton brush = new JButton(brushHighlighted);
-        brush.setPreferredSize(new Dimension(30, 30));
-        brush.setFocusPainted(false);
-        brush.setBorder(new LineBorder(Constants.sysDark, 2));
-        brush.setBackground(Constants.sysDark);
-        topTray.add(brush);
+            @Override
+            public void onImageSetupRequested() {
+                CanvasSettingsDialog dialog = new CanvasSettingsDialog(
+                        window, canvas.getWidth(), canvas.getHeight(), canvas.getBackground());
+                JCheckBox transparentBox = new JCheckBox("Transparent Background");
+                dialog.add(transparentBox, BorderLayout.SOUTH);
+                dialog.pack();
+                dialog.setVisible(true);
 
-        //Eraser Selector
-        ImageIcon eraserIcon = new ImageIcon("images/eraser.png");
-        ImageIcon eraserHighlighted = new ImageIcon("images/eraser2.png");
-        JButton eraser = new JButton(eraserIcon);
-        eraser.setPreferredSize(new Dimension(30, 30));
-        eraser.setBackground(Constants.sysLight);
-        eraser.setFocusPainted(false);
-        eraser.setBorder(new LineBorder(Constants.sysDark, 2));
-        topTray.add(eraser);
+                if (dialog.isApproved()) {
+                    Color colorChosen = dialog.getSelectedColor();
+                    int width = dialog.getCanvasWidth();
+                    int height = dialog.getCanvasHeight();
+                    if (transparentBox.isSelected()) {
+                        colorChosen = new Color(0, 0, 0, 0); // Fully transparent
+                    }
+                    toolBar.setImageSetupSwatch(colorChosen);
+                    canvas.setBackgroundColor(colorChosen);
+                    canvas.setCanvasSize(width, height);
+                    window.pack();
+                }
+            }
 
-        JButton textField = new JButton("t|");
-        textField.setFont(new Font("Verdana", Font.BOLD, 12));
-        textField.setPreferredSize(new Dimension(30, 30));
-        textField.setBackground(Constants.sysLight);
-        textField.setFocusPainted(false);
-        textField.setBorder(new LineBorder(Constants.sysDark, 2));
-        textField.setForeground(Constants.sysDark);
-        topTray.add(textField);
+            @Override
+            public void onBrushSizeChanged(int size) {
+                brushSizeSelected = size;
+                canvas.chooseSize(size);
+            }
+        });
 
-        // Line Tool Button
-        JButton lineButton = new JButton("/");
-        lineButton.setFont(new Font("Verdana", Font.BOLD, 16));
-        lineButton.setPreferredSize(new Dimension(30, 30));
-        lineButton.setBackground(Constants.sysLight);
-        lineButton.setFocusPainted(false);
-        lineButton.setBorder(new LineBorder(Constants.sysDark, 2));
-        lineButton.setForeground(Constants.sysDark);
-        topTray.add(lineButton);
+        sideBar = new SideBar(new SideBar.SideBarListener() {
+            @Override
+            public void onNewImage() {
+                canvas.clearAll();
+                canvas.importImage();
+            }
 
-        //Color Selector
-        JButton selectColor = new JButton("Select Color");
-        selectColor.setFont(new Font("Verdana", Font.PLAIN, 12));
-        selectColor.setPreferredSize(new Dimension(120,30));
-        selectColor.setBackground(selectedColor);
-        selectColor.setFocusPainted(false);
-        selectColor.setBorder(new LineBorder(Constants.sysDark, 2));
-        selectColor.setForeground(Color.white);
-        topTray.add(selectColor);
+            @Override
+            public void onSaveImage() {
+                canvas.exportImage();
+            }
 
-        // Background Color Selector
-        JButton backgroundColorButton = new JButton("Image Setup");
-        backgroundColorButton.setFont(new Font("Verdana", Font.PLAIN, 12));
-        backgroundColorButton.setPreferredSize(new Dimension(120,30));
-        backgroundColorButton.setBackground(Color.white);
-        backgroundColorButton.setFocusPainted(false);
-        backgroundColorButton.setBorder(new LineBorder(Constants.sysDark, 2));
-        backgroundColorButton.setForeground(Color.black);
-        topTray.add(backgroundColorButton);
+            @Override
+            public void onSettingsRequested() {
+                SettingsDialog settingsDialog = new SettingsDialog(
+                        window, Theme.current, currentLayout,
+                        (theme, layout) -> {
+                            applyTheme(theme);
+                            applyLayout(layout);
+                        });
+                settingsDialog.setVisible(true);
+            }
+        });
 
-        //Brush Size Selector
-        Integer[] brushSizesList = {1, 2, 5, 10, 15, 30, 50, 100, 150, 200};
-        JComboBox<Integer> brushSizeSelector = new JComboBox<>(brushSizesList);
-        brushSizeSelector.setSelectedIndex(4);
-        brushSizeSelector.setEditable(true);
-        brushSizeSelector.setPreferredSize(new Dimension(100, 30));
-        topTray.add(brushSizeSelector);
+        statusBar = new StatusBar(zoom -> canvas.setZoom(zoom / 100.0));
 
-        //Some alignment and settings for the TopTray
-        FlowLayout topLayout = new FlowLayout(FlowLayout.LEFT);
-        topTray.setBackground(Constants.sysColor);
-        topTray.setPreferredSize(new Dimension(window.getWidth(), 50));
-        topTray.setLayout(topLayout);
-        topTray.setVisible(true);
-        //TopTray Border
-        MatteBorder topTrayBorder = new MatteBorder(0, 0, 2, 0, Color.black);
-        EmptyBorder topTrayPadding = new EmptyBorder(0, 0, 15, 0);
-        topTray.setBorder(new CompoundBorder(topTrayBorder, topTrayPadding));
+        themeables = List.of(toolBar, sideBar, statusBar);
 
-        //Sidebar properties
-        sideBar.setBackground(Constants.sysLight);
-        sideBar.setPreferredSize(new Dimension(55, window.getHeight()));
-        sideBar.setVisible(true);
-        sideBar.setBorder(new MatteBorder(0,0,0,3, Color.black));
-
-        int scaledImageSize = 40;
-        int sideBarButtonSize = 45;
-        Dimension sideBarButtonDimension = new Dimension(sideBarButtonSize, sideBarButtonSize);
-
-        //Sidebar components:
-        ImageIcon addIcon = new ImageIcon("images/addIcon.png");
-        scaledImage = addIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
-        addIcon.setImage(scaledImage);
-        JButton newButton = new JButton(addIcon);
-        newButton.setBackground(null);
-        newButton.setBorder(null);
-        newButton.setFocusPainted(false);
-        newButton.setPreferredSize(sideBarButtonDimension);
-
-        ImageIcon saveIcon = new ImageIcon("images/saveIcon.png");
-        scaledImage = saveIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
-        saveIcon.setImage(scaledImage);
-        JButton fileButton = new JButton(saveIcon);
-        fileButton.setBackground(null);
-        fileButton.setBorder(null);
-        fileButton.setFocusPainted(false);
-        fileButton.setPreferredSize(sideBarButtonDimension);
-
-        ImageIcon settingsIcon = new ImageIcon("images/settingsIcon.png");
-        scaledImage = settingsIcon.getImage().getScaledInstance(scaledImageSize, scaledImageSize, 0);
-        settingsIcon.setImage(scaledImage);
-        JButton settingButton = new JButton(settingsIcon);
-        settingButton.setBackground(null);
-        settingButton.setBorder(null);
-        settingButton.setPreferredSize(sideBarButtonDimension);
-        settingButton.setFocusPainted(false);
-
-        sideBar.add(newButton);
-        sideBar.add(fileButton);
-        sideBar.add(settingButton, BorderLayout.SOUTH);
-
-        // Window properties
+        window.setIconImage(toolBar.getWindowIcon());
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.add(canvas);
-        window.add(sideBar, BorderLayout.WEST);
-        window.add(topTray, BorderLayout.NORTH);
-        
-        // --- Add status bar for zoom and coordinates ---
-        JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        statusBar.setBackground(Constants.sysDark);
-        JLabel zoomLabel = new JLabel("Zoom: 100%");
-        zoomLabel.setForeground(Color.white);
-        JLabel coordLabel = new JLabel("X: 0, Y: 0");
-        coordLabel.setForeground(Color.white);
-        JSlider zoomSlider = new JSlider(10, 400, 100); // 10% to 400%
-        zoomSlider.setBackground(Constants.sysDark);
-        zoomSlider.setPreferredSize(new Dimension(120, 15));
-        statusBar.add(zoomLabel);
-        statusBar.add(zoomSlider);
-        statusBar.add(coordLabel);
-        
-        window.add(statusBar, BorderLayout.SOUTH);
-        
+        window.add(sideBar.getPanel(), BorderLayout.WEST);
+        window.add(toolBar.getPanel(), BorderLayout.NORTH);
+        window.add(statusBar.getPanel(), BorderLayout.SOUTH);
+
+        canvas.setBackground(Constants.bgWindow);
+
         window.pack();
         window.setResizable(true);
         window.setMinimumSize(new Dimension(1000, 500));
         window.setLocationRelativeTo(null);
         window.setVisible(true);
-
-        // Button Logic
-
-        //Undo Button
-        undoButton.addActionListener(_ -> {
-            canvas.undoAction();
-            canvas.repaint();
-        });
-
-        //Brush Button
-        brush.addActionListener(_ -> {
-            brush.setIcon(brushHighlighted);
-            brush.setBackground(Constants.sysDark);
-            eraser.setIcon(eraserIcon);
-            eraser.setBackground(Constants.sysLight);
-            textField.setForeground(Constants.sysDark);
-            textField.setBackground(Constants.sysLight);
-            canvas.setBrushMode(1);
-            setBrushMode(1);
-        });
-
-        //Eraser Button
-        eraser.addActionListener(_ -> {
-            brush.setIcon(brushIcon);
-            brush.setBackground(Constants.sysLight);
-            eraser.setIcon(eraserHighlighted);
-            eraser.setBackground(Constants.sysDark);
-            textField.setForeground(Constants.sysDark);
-            textField.setBackground(Constants.sysLight);
-            canvas.setBrushMode(2);
-            setBrushMode(2);
-        });
-
-        textField.addActionListener(_ -> {
-            brush.setIcon(brushIcon);
-            brush.setBackground(Constants.sysLight);
-            eraser.setIcon(eraserIcon);
-            eraser.setBackground(Constants.sysLight);
-            textField.setForeground(Constants.accent1);
-            textField.setBackground(Constants.sysDark);
-            canvas.setBrushMode(3);
-            setBrushMode(3);
-        });
-
-        // Line Tool Button
-        lineButton.addActionListener(_ -> {
-            brush.setIcon(brushIcon);
-            brush.setBackground(Constants.sysLight);
-            eraser.setIcon(eraserIcon);
-            eraser.setBackground(Constants.sysLight);
-            textField.setForeground(Constants.sysDark);
-            textField.setBackground(Constants.sysLight);
-            lineButton.setForeground(Constants.accent1);
-            lineButton.setBackground(Constants.sysDark);
-            canvas.setBrushMode(4);
-            setBrushMode(4);
-        });
-
-        //Color Selector
-        selectColor.addActionListener(_ -> {
-            Color colorChosen = JColorChooser.showDialog(null, "Pick a Color", Color.black);
-            selectedColor = colorChosen;
-            selectColor.setBackground(selectedColor);
-            if (colorChosen != null) {
-                canvas.setColorChosen(colorChosen);
-            }
-            selectColor.setForeground(getContrastColor(colorChosen)); // <-- update foreground
-        });
-
-        // Background Color Selector
-        backgroundColorButton.addActionListener(_ -> {
-            CanvasSettingsDialog dialog = new CanvasSettingsDialog(window, canvas.getWidth(), canvas.getHeight(), canvas.getBackground());
-            JCheckBox transparentBox = new JCheckBox("Transparent Background");
-            // Add the checkbox directly to the dialog, not by getComponent(0)
-            dialog.add(transparentBox, BorderLayout.SOUTH);
-            dialog.pack();
-            dialog.setVisible(true);
-
-            if (dialog.isApproved()) {
-                Color colorChosen = dialog.getSelectedColor();
-                int width = dialog.getCanvasWidth();
-                int height = dialog.getCanvasHeight();
-                if (transparentBox.isSelected()) {
-                    colorChosen = new Color(0, 0, 0, 0); // Fully transparent
-                }
-                backgroundColorButton.setBackground(colorChosen);
-                backgroundColorButton.setForeground(getContrastColor(colorChosen));
-                canvas.setBackgroundColor(colorChosen);
-                canvas.setCanvasSize(width, height);
-                window.pack();
-            }
-        });
-
-        //Brush Size Selector
-        brushSizeSelector.addActionListener(_ -> {
-            brushSizeSelected = (int) brushSizeSelector.getSelectedItem();
-            canvas.chooseSize(brushSizeSelected);
-        });
-
 
         //Mouse Input Grabber
         canvas.addMouseListener(new MouseAdapter() {
@@ -333,7 +150,7 @@ public class App {
                     textFieldInput.setFont(new Font("Verdana", Font.BOLD, brushSizeSelected * 2));
                     textFieldInput.setForeground(canvas.getForeground());
                     textFieldInput.setBackground(new Color(255,255,255,180));
-                    textFieldInput.setBorder(BorderFactory.createLineBorder(Constants.accent1));
+                    textFieldInput.setBorder(BorderFactory.createLineBorder(Constants.accent));
                     int fieldHeight = brushSizeSelected * 2;
                     // Place the text field at the correct zoomed position
                     int x = (int)(imgPt.x * canvas.getZoom());
@@ -379,7 +196,7 @@ public class App {
             @Override
             public void mouseDragged(MouseEvent e){
                 Point imgPt = canvas.toImageCoords(e.getPoint());
-                coordLabel.setText("X: " + imgPt.x + ", Y: " + imgPt.y);
+                statusBar.setCoordinates(imgPt.x, imgPt.y);
                 if (getBrushMode() == 4) {
                     // Update preview line to follow the cursor
                     canvas.setLinePreview(canvas.getLinePreviewStart(), imgPt, selectedColor, brushSizeSelected);
@@ -391,41 +208,54 @@ public class App {
             @Override
             public void mouseMoved(MouseEvent e) {
                 Point p = canvas.toImageCoords(e.getPoint());
-                coordLabel.setText("X: " + p.x + ", Y: " + p.y);
+                statusBar.setCoordinates(p.x, p.y);
             }
         });
+    }
 
-        // SideBar Button Logic
+    private static void applyTheme(String themeLabel) {
+        Theme.fromLabel(themeLabel).apply();
+        for (Themeable t : themeables) {
+            t.applyTheme();
+        }
+        canvas.setBackground(Constants.bgWindow);
+        window.repaint();
+    }
 
-        newButton.addActionListener(_ -> {
-            canvas.clearAll();
-            canvas.importImage();
-        });
-        fileButton.addActionListener(_ -> {
-            canvas.exportImage();
-        });
-        settingButton.addActionListener(_ -> {
-            SettingsDialog settingsDialog = new SettingsDialog(window, (theme, layout) -> {
-                System.out.println("Theme selected: " + theme);
-                System.out.println("Layout selected: " + layout);
-            });
-            settingsDialog.setVisible(true);
-        });
-        
-        // --- Zoom slider logic ---
-        zoomSlider.addChangeListener(_ -> {
-            int zoom = zoomSlider.getValue();
-            zoomLabel.setText("Zoom: " + zoom + "%");
-            canvas.setZoom(zoom / 100.0);
-        });
+    // Standard: today's NORTH/WEST/SOUTH/CENTER arrangement.
+    // Top-Oriented: sidebar's buttons relocate into the toolbar, canvas
+    // reclaims the freed width.
+    // Free: freeform docking is deliberately out of scope for this pass
+    // (no docking framework, no build tool to introduce one cleanly) -
+    // falls back to Standard with an explicit message rather than silently
+    // doing nothing.
+    private static void applyLayout(String layout) {
+        if ("Free".equals(layout)) {
+            JOptionPane.showMessageDialog(window,
+                    "Free layout isn't implemented yet - using Standard layout.");
+            layout = "Standard";
+        }
+
+        window.remove(sideBar.getPanel());
+        for (JButton b : sideBar.getRelocatableButtons()) {
+            toolBar.removeTrailingComponent(b);
+        }
+
+        if ("Top-Oriented".equals(layout)) {
+            for (JButton b : sideBar.getRelocatableButtons()) {
+                toolBar.addTrailingComponent(b);
+            }
+        } else {
+            sideBar.restoreStandardArrangement();
+            window.add(sideBar.getPanel(), BorderLayout.WEST);
+            layout = "Standard";
+        }
+
+        currentLayout = layout;
+        window.revalidate();
+        window.repaint();
     }
 
     public static void setBrushMode(int mode) {brushMode = mode;}
     public static int getBrushMode(){return brushMode;}
-    // Add this helper method to App class (outside main)
-    private static Color getContrastColor(Color color) {
-        // Calculate luminance
-        double luminance = (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
-        return luminance > 0.5 ? Color.black : Color.white;
-    }
 }

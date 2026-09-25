@@ -18,6 +18,7 @@ public class CanvasSettingsDialog extends JDialog {
         canvasHeight = currentHeight > 0 ? currentHeight : 720;
 
         JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Constants.bgWindow);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
@@ -36,20 +37,25 @@ public class CanvasSettingsDialog extends JDialog {
 
         // Width input
         gbc.gridy = 1;
-        panel.add(new JLabel("Width:"), gbc);
+        JLabel widthLabel = new JLabel("Width:");
+        widthLabel.setForeground(Constants.textPrimary);
+        panel.add(widthLabel, gbc);
         JSpinner widthSpinner = new JSpinner(new SpinnerNumberModel(canvasWidth, 100, 3840, 10));
         gbc.gridx = 1;
         panel.add(widthSpinner, gbc);
 
         // Height input
         gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Height:"), gbc);
+        JLabel heightLabel = new JLabel("Height:");
+        heightLabel.setForeground(Constants.textPrimary);
+        panel.add(heightLabel, gbc);
         JSpinner heightSpinner = new JSpinner(new SpinnerNumberModel(canvasHeight, 100, 2160, 10));
         gbc.gridx = 1;
         panel.add(heightSpinner, gbc);
 
         // Buttons
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Constants.bgWindow);
         JButton okButton = new JButton("OK");
         okButton.addActionListener(_ -> {
             canvasWidth = (Integer)widthSpinner.getValue();

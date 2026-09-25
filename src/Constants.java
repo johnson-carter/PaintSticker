@@ -1,19 +1,33 @@
 import java.awt.Color;
+import java.awt.Font;
 
 public class Constants {
-    private final static Color LIGHTDARK = new Color(100, 100, 100);
-    private final static Color REGULARDARK = new Color(60, 60, 60);
-    private final static Color DARKDARK = new Color(30, 30, 30);
+    // Backgrounds
+    static Color bgWindow;
+    static Color bgToolbar;
+    static Color bgSidebar;
+    static Color bgStatusBar;
 
-    private final static Color SKYBLUE = new Color(135, 206, 250); // Light Sky Blue
-    private final static Color REDORANGE = new Color(255, 69, 0); // Red-Orange
-    private final static Color LIGHTGREEN = new Color(144, 238, 144); // Light Green
+    // Chrome
+    static Color border;
+    static int borderWidth = 2;
 
-    static Color sysLight = LIGHTDARK;
-    static Color sysColor = REGULARDARK;
-    static Color sysDark = DARKDARK;
+    // Text
+    static Color textPrimary;
+    static Color textMuted;
 
-    static Color accent1 = SKYBLUE;
-    static Color accent2 = REDORANGE;
-    static Color accent3 = LIGHTGREEN;
+    // Accents
+    static Color accent;
+    static Color accentWarn;
+    static Color accentSuccess;
+
+    // Tool-selector button states
+    static Color buttonIdleBg;
+    static Color buttonSelectedBg;
+
+    // Typography - theme-independent, only color changes per theme
+    static final Font FONT_LABEL = new Font("Verdana", Font.PLAIN, 12);
+    static final Font FONT_BUTTON = new Font("Verdana", Font.PLAIN, 12);
+    static final Font FONT_HEADING = new Font("Verdana", Font.BOLD, 12);
+    static final Font FONT_GLYPH = new Font("Verdana", Font.BOLD, 16);
 }
