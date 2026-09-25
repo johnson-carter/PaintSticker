@@ -289,9 +289,7 @@ public class App {
                 backgroundColorButton.setBackground(colorChosen);
                 backgroundColorButton.setForeground(getContrastColor(colorChosen));
                 canvas.setBackgroundColor(colorChosen);
-                canvas.setPreferredSize(new Dimension(width, height));
-                canvas.revalidate();
-                canvas.repaint();
+                canvas.setCanvasSize(width, height);
                 window.pack();
             }
         });
@@ -381,6 +379,7 @@ public class App {
             @Override
             public void mouseDragged(MouseEvent e){
                 Point imgPt = canvas.toImageCoords(e.getPoint());
+                coordLabel.setText("X: " + imgPt.x + ", Y: " + imgPt.y);
                 if (getBrushMode() == 4) {
                     // Update preview line to follow the cursor
                     canvas.setLinePreview(canvas.getLinePreviewStart(), imgPt, selectedColor, brushSizeSelected);
@@ -418,20 +417,6 @@ public class App {
             int zoom = zoomSlider.getValue();
             zoomLabel.setText("Zoom: " + zoom + "%");
             canvas.setZoom(zoom / 100.0);
-        });
-
-        // --- Mouse coordinate display ---
-        canvas.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                Point p = canvas.toImageCoords(e.getPoint());
-                coordLabel.setText("X: " + p.x + ", Y: " + p.y);
-            }
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                Point p = canvas.toImageCoords(e.getPoint());
-                coordLabel.setText("X: " + p.x + ", Y: " + p.y);
-            }
         });
     }
 

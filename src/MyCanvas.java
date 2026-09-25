@@ -38,6 +38,13 @@ public class MyCanvas extends JPanel {
     private Color backgroundColor = Color.white;
     private double zoom = 1.0;
 
+    // Committed strokes, baked in once and reused every frame instead of being
+    // replayed from totalStrokes on every repaint. Lives in the same unzoomed
+    // "image space" as backgroundImage, so zoom changes never require a rebuild.
+    // Must be TYPE_INT_ARGB: erasing relies on AlphaComposite.Clear actually
+    // zeroing alpha, which only works on a surface with a real alpha channel.
+    private BufferedImage committedLayer;
+
     // For line tool preview
     private Point linePreviewStart = null;
     private Point linePreviewEnd = null;
@@ -62,6 +69,7 @@ public class MyCanvas extends JPanel {
             }
             BrushStroke currentStroke = new BrushStroke(x, y, paintCol, size);
             strokes.add(currentStroke);
+            paintOnLayer(currentStroke);
             //Interpolation algorithm will run with >1 point present
             if (strokes.size() >= 2) {
                 BrushStroke prev = strokes.get(strokes.size() - 2);
@@ -74,23 +82,72 @@ public class MyCanvas extends JPanel {
                     double t = i / distance;
                     int interpX = (int) Math.round(prev.getXval() + t * (curr.getXval() - prev.getXval()));
                     int interpY = (int) Math.round(prev.getYval() + t * (curr.getYval() - prev.getYval()));
-                    strokes.add(new BrushStroke(interpX, interpY, curr.getColor(), curr.getSize()));
-                    
+                    BrushStroke interp = new BrushStroke(interpX, interpY, curr.getColor(), curr.getSize());
+                    strokes.add(interp);
+                    paintOnLayer(interp);
                 }
             }
         }
     }
-    
+
+    // Bake one stroke onto the committed layer immediately (O(1) per stroke)
+    // instead of waiting to replay the whole history on the next repaint.
+    private void paintOnLayer(BrushStroke stroke) {
+        ensureLayerCapacity();
+        Graphics2D layerG = committedLayer.createGraphics();
+        new Paintbrush(layerG).drawStroke(stroke);
+        layerG.dispose();
+    }
+
+    // (Re)allocate the committed layer to at least the currently-needed size,
+    // growing it (and preserving existing pixels) rather than shrinking it.
+    private void ensureLayerCapacity() {
+        if (backgroundImage != null) {
+            if (committedLayer == null) {
+                rebuildLayer(backgroundImage.getWidth(), backgroundImage.getHeight());
+            }
+            return;
+        }
+        int neededW = Math.max(1, (int) Math.ceil(getWidth() / zoom));
+        int neededH = Math.max(1, (int) Math.ceil(getHeight() / zoom));
+        if (committedLayer == null) {
+            rebuildLayer(neededW, neededH);
+        } else if (committedLayer.getWidth() < neededW || committedLayer.getHeight() < neededH) {
+            int newW = Math.max(committedLayer.getWidth(), neededW);
+            int newH = Math.max(committedLayer.getHeight(), neededH);
+            BufferedImage old = committedLayer;
+            committedLayer = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D layerG = committedLayer.createGraphics();
+            layerG.drawImage(old, 0, 0, null);
+            layerG.dispose();
+        }
+    }
+
+    // Hard reset: allocate a blank layer at the given size and replay the full
+    // stroke history onto it. Only used for rare, discrete events (undo,
+    // explicit canvas resize, new background image) - never per-frame.
+    private void rebuildLayer(int width, int height) {
+        committedLayer = new BufferedImage(Math.max(1, width), Math.max(1, height), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D layerG = committedLayer.createGraphics();
+        new Paintbrush(layerG).drawStrokes(totalStrokes);
+        layerG.dispose();
+    }
+
     //These all perform some action corresponding to their button
     public void undoAction(){
         if (!totalStrokes.isEmpty()){
             totalStrokes.remove(totalStrokes.size() - 1);
+            ensureLayerCapacity();
+            rebuildLayer(committedLayer.getWidth(), committedLayer.getHeight());
             repaint();
         }
     }
     //Currently ran by the new file button, but may be implemented differently in the future
     public void clearAll(){
         totalStrokes.clear();
+        if (committedLayer != null) {
+            rebuildLayer(committedLayer.getWidth(), committedLayer.getHeight());
+        }
         repaint();
     }
     public void setBrushMode(int status){
@@ -108,6 +165,7 @@ public class MyCanvas extends JPanel {
     }
     public void setCanvasSize(int width, int height) {
         setPreferredSize(new Dimension(width, height));
+        rebuildLayer(width, height);
         revalidate();
         repaint();
     }
@@ -136,6 +194,7 @@ public class MyCanvas extends JPanel {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
+        ensureLayerCapacity();
         Graphics2D g2 = (Graphics2D) g.create();
         g2.scale(zoom, zoom);
         Paintbrush myBrush = new Paintbrush(g2);
@@ -143,7 +202,7 @@ public class MyCanvas extends JPanel {
         if(backgroundImage != null){
             g2.drawImage(backgroundImage, 0, 0, this);
         }
-        myBrush.drawStrokes(totalStrokes);
+        g2.drawImage(committedLayer, 0, 0, this);
         // Draw line preview if active
         if (linePreviewStart != null && linePreviewEnd != null) {
             g2.setColor(linePreviewColor != null ? linePreviewColor : Color.black);
@@ -183,6 +242,7 @@ public class MyCanvas extends JPanel {
                     img = scaledImg;
                 }
                 backgroundImage = img;
+                rebuildLayer(backgroundImage.getWidth(), backgroundImage.getHeight());
                 setPreferredSize(new Dimension(
                     backgroundImage.getWidth(),
                     backgroundImage.getHeight()));
@@ -197,7 +257,11 @@ public class MyCanvas extends JPanel {
     }
 	
 	public void exportImage() {
-	    int w = getWidth(), h = getHeight();
+	    // Export at the canvas's native (unzoomed) resolution, not the current
+	    // on-screen zoomed pixel size - the committed layer already holds the
+	    // baked strokes at that resolution, so we just composite the layers.
+	    ensureLayerCapacity();
+	    int w = committedLayer.getWidth(), h = committedLayer.getHeight();
 	    BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 	    Graphics2D g2 = out.createGraphics();
 	    // Draw background color rectangle
@@ -207,8 +271,7 @@ public class MyCanvas extends JPanel {
 	    if (backgroundImage != null) {
 	        g2.drawImage(backgroundImage, 0, 0, null);
 	    }
-	    // Use the same logic as on-screen rendering for all strokes (including text)
-	    exportBrush.drawStrokes(totalStrokes);
+	    g2.drawImage(committedLayer, 0, 0, null);
 	    g2.dispose();
 
 	    // save to file
@@ -228,21 +291,6 @@ public class MyCanvas extends JPanel {
 	        }
 	    }
 	
-
-
-	    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-	        File file = chooser.getSelectedFile();
-	        if (!file.getName().toLowerCase().endsWith(".png")) {
-	            file = new File(file.getAbsolutePath() + ".png");
-	        }
-	        try {
-	            ImageIO.write(out, "PNG", file);
-	        } catch (IOException ex) {
-	            JOptionPane.showMessageDialog(this,
-	                "Failed to save image:\n" + ex.getMessage(),
-	                "Save Error", JOptionPane.ERROR_MESSAGE);
-	        }
-	    }
 	}
 
     // Add this method back to support text strokes
@@ -251,6 +299,7 @@ public class MyCanvas extends JPanel {
         List<BrushStroke> textGroup = new ArrayList<>();
         textGroup.add(textStroke);
         totalStrokes.add(textGroup);
+        paintOnLayer(textStroke);
         repaint();
     }
 
@@ -287,6 +336,9 @@ public class MyCanvas extends JPanel {
             if (e2 < dx) { err += dx; y0 += sy; }
         }
         totalStrokes.add(lineGroup);
+        for (BrushStroke s : lineGroup) {
+            paintOnLayer(s);
+        }
         repaint();
     }
 
