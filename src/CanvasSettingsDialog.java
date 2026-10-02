@@ -3,17 +3,19 @@ import java.awt.*;
 
 public class CanvasSettingsDialog extends JDialog {
     /**
-	 * 
+	 *
 	 */
 	private Color selectedColor;
     private int canvasWidth;
     private int canvasHeight;
     private boolean approved = false;
+    private boolean transparent;
 
     public CanvasSettingsDialog(Frame owner, int currentWidth, int currentHeight, Color currentColor) {
         super(owner, "Canvas Settings", true);
 
-        selectedColor = currentColor != null ? currentColor : Color.white;
+        transparent = currentColor == null || currentColor.getAlpha() == 0;
+        selectedColor = (currentColor != null && !transparent) ? currentColor : Color.white;
         canvasWidth = currentWidth > 0 ? currentWidth : 1080;
         canvasHeight = currentHeight > 0 ? currentHeight : 720;
 
@@ -26,6 +28,7 @@ public class CanvasSettingsDialog extends JDialog {
         gbc.gridx = 0; gbc.gridy = 0;
         JButton colorButton = new JButton("Choose Color");
         colorButton.setBackground(selectedColor);
+        colorButton.setEnabled(!transparent);
         colorButton.addActionListener(_ -> {
             Color newColor = JColorChooser.showDialog(this, "Choose Background Color", selectedColor);
             if (newColor != null) {
@@ -35,8 +38,19 @@ public class CanvasSettingsDialog extends JDialog {
         });
         panel.add(colorButton, gbc);
 
+        // Transparent background toggle
+        gbc.gridx = 1;
+        JCheckBox transparentBox = new JCheckBox("Transparent", transparent);
+        transparentBox.setForeground(Constants.textPrimary);
+        transparentBox.setOpaque(false);
+        transparentBox.addActionListener(_ -> {
+            transparent = transparentBox.isSelected();
+            colorButton.setEnabled(!transparent);
+        });
+        panel.add(transparentBox, gbc);
+
         // Width input
-        gbc.gridy = 1;
+        gbc.gridx = 0; gbc.gridy = 1;
         JLabel widthLabel = new JLabel("Width:");
         widthLabel.setForeground(Constants.textPrimary);
         panel.add(widthLabel, gbc);
@@ -79,7 +93,11 @@ public class CanvasSettingsDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
-    public Color getSelectedColor() { return selectedColor; }
+    // Returns a fully-transparent color when the "Transparent" box is
+    // checked, regardless of whatever color was previously picked - the
+    // rest of the app treats alpha-0 as the signal for "no background".
+    public Color getSelectedColor() { return transparent ? new Color(0, 0, 0, 0) : selectedColor; }
+    public boolean isTransparent() { return transparent; }
     public int getCanvasWidth() { return canvasWidth; }
     public int getCanvasHeight() { return canvasHeight; }
     public boolean isApproved() { return approved; }

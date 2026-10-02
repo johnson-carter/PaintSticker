@@ -21,8 +21,10 @@ public class ToolBar implements Themeable {
     public interface ToolBarListener {
         void onToolSelected(int mode);
         void onUndo();
+        void onRedo();
         void onColorChosen(Color color);
         void onImageSetupRequested();
+        void onStickerLibraryRequested();
         void onBrushSizeChanged(int size);
     }
 
@@ -30,12 +32,14 @@ public class ToolBar implements Themeable {
     public static final int TOOL_ERASER = 2;
     public static final int TOOL_TEXT = 3;
     public static final int TOOL_LINE = 4;
+    public static final int TOOL_STICKER = 5;
 
     private final ToolBarListener listener;
     private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     private final ImageIcon logoIcon;
     private final JButton undoButton;
+    private final JButton redoButton;
     private final JLabel toolkitLabel;
 
     private final ImageIcon brushIcon, brushHighlighted, eraserIcon, eraserHighlighted;
@@ -45,6 +49,7 @@ public class ToolBar implements Themeable {
 
     private final JButton selectColorButton;
     private final JButton imageSetupButton;
+    private final JButton stickersButton;
     private final JComboBox<Integer> brushSizeSelector;
 
     public ToolBar(ToolBarListener listener) {
@@ -65,6 +70,15 @@ public class ToolBar implements Themeable {
         undoButton.setPreferredSize(new Dimension(30, 30));
         undoButton.addActionListener(_ -> listener.onUndo());
         panel.add(undoButton);
+
+        // No dedicated redo icon asset exists, so this mirrors the "t|" / "/"
+        // text-glyph buttons already used for the text/line tools below.
+        redoButton = new JButton("Redo");
+        redoButton.setFont(Constants.FONT_BUTTON);
+        redoButton.setFocusPainted(false);
+        redoButton.setPreferredSize(new Dimension(50, 30));
+        redoButton.addActionListener(_ -> listener.onRedo());
+        panel.add(redoButton);
 
         toolkitLabel = new JLabel(" Select Tool: ");
         toolkitLabel.setFont(Constants.FONT_HEADING);
@@ -130,6 +144,13 @@ public class ToolBar implements Themeable {
         imageSetupButton.addActionListener(_ -> listener.onImageSetupRequested());
         panel.add(imageSetupButton);
 
+        stickersButton = new JButton("Stickers");
+        stickersButton.setFont(Constants.FONT_BUTTON);
+        stickersButton.setFocusPainted(false);
+        stickersButton.setPreferredSize(new Dimension(90, 30));
+        stickersButton.addActionListener(_ -> listener.onStickerLibraryRequested());
+        panel.add(stickersButton);
+
         JLabel sizeLabel = new JLabel(" Size: ");
         sizeLabel.setFont(Constants.FONT_LABEL);
         panel.add(sizeLabel);
@@ -150,6 +171,14 @@ public class ToolBar implements Themeable {
         currentTool = mode;
         highlightButtons();
         listener.onToolSelected(mode);
+    }
+
+    // Used by App to snap the tool-row highlight back to Brush after a
+    // sticker placement is confirmed/cancelled, without re-firing
+    // onToolSelected (App already knows and has applied the mode change).
+    public void forceSelectTool(int mode) {
+        currentTool = mode;
+        highlightButtons();
     }
 
     // Replaces what used to be 4 near-identical "reset everyone else, highlight
@@ -231,8 +260,14 @@ public class ToolBar implements Themeable {
         toolkitLabel.setForeground(Constants.accent);
         undoButton.setBackground(Constants.accentWarn);
         undoButton.setBorder(new LineBorder(Constants.border, Constants.borderWidth));
+        redoButton.setBackground(Constants.buttonIdleBg);
+        redoButton.setForeground(Constants.textPrimary);
+        redoButton.setBorder(new LineBorder(Constants.border, Constants.borderWidth));
         selectColorButton.setBorder(new LineBorder(Constants.border, Constants.borderWidth));
         imageSetupButton.setBorder(new LineBorder(Constants.border, Constants.borderWidth));
+        stickersButton.setBackground(Constants.buttonIdleBg);
+        stickersButton.setForeground(Constants.textPrimary);
+        stickersButton.setBorder(new LineBorder(Constants.border, Constants.borderWidth));
         highlightButtons();
         panel.repaint();
     }

@@ -1,7 +1,10 @@
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,6 +19,7 @@ public class SideBar implements Themeable {
         void onNewImage();
         void onSaveImage();
         void onSettingsRequested();
+        void onLayersRequested();
     }
 
     private static final int ICON_SIZE = 40;
@@ -24,6 +28,7 @@ public class SideBar implements Themeable {
     private final JPanel panel = new JPanel();
     private final JButton newButton;
     private final JButton fileButton;
+    private final JButton layersButton;
     private final JButton settingButton;
 
     public SideBar(SideBarListener listener) {
@@ -33,10 +38,12 @@ public class SideBar implements Themeable {
 
         newButton = iconButton(loadScaledIcon("images/addIcon.png", ICON_SIZE));
         fileButton = iconButton(loadScaledIcon("images/saveIcon.png", ICON_SIZE));
+        layersButton = iconButton(layersIcon(ICON_SIZE));
         settingButton = iconButton(loadScaledIcon("images/settingsIcon.png", ICON_SIZE));
 
         newButton.addActionListener(_ -> listener.onNewImage());
         fileButton.addActionListener(_ -> listener.onSaveImage());
+        layersButton.addActionListener(_ -> listener.onLayersRequested());
         settingButton.addActionListener(_ -> listener.onSettingsRequested());
 
         restoreStandardArrangement();
@@ -61,6 +68,27 @@ public class SideBar implements Themeable {
         return icon;
     }
 
+    // No layers icon asset exists, so this draws a small stack-of-panes
+    // glyph in code instead - three overlapping rounded rects, matching the
+    // visual weight of the other flat-icon SideBar buttons.
+    private static ImageIcon layersIcon(int size) {
+        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        int pad = size / 6;
+        int step = size / 5;
+        int w = size - pad * 2;
+        int h = size - pad * 2;
+        g2.setColor(new Color(70, 140, 200));
+        g2.fillRoundRect(pad, pad + step * 2, w - step, h - step * 2, 4, 4);
+        g2.setColor(new Color(110, 175, 225));
+        g2.fillRoundRect(pad + step, pad + step, w - step, h - step, 4, 4);
+        g2.setColor(new Color(160, 210, 245));
+        g2.fillRoundRect(pad + step * 2, pad, w - step, h - step, 4, 4);
+        g2.dispose();
+        return new ImageIcon(img);
+    }
+
     public JPanel getPanel() {
         return panel;
     }
@@ -69,7 +97,7 @@ public class SideBar implements Themeable {
     // Top-Oriented) can relocate them into a different container. Swing
     // re-parents a component automatically when it's added elsewhere.
     public List<JButton> getRelocatableButtons() {
-        return List.of(newButton, fileButton, settingButton);
+        return List.of(newButton, fileButton, layersButton, settingButton);
     }
 
     // Rebuilds this panel's own arrangement from scratch: new/save at top,
@@ -80,6 +108,7 @@ public class SideBar implements Themeable {
         panel.removeAll();
         panel.add(newButton);
         panel.add(fileButton);
+        panel.add(layersButton);
         panel.add(Box.createVerticalGlue());
         panel.add(settingButton);
         panel.revalidate();

@@ -15,6 +15,19 @@ public class App {
     private static StatusBar statusBar;
     private static List<Themeable> themeables;
     private static String currentLayout = "Standard";
+    private static LayersDialog layersDialog;
+    private static StickerLibrary stickerLibrary;
+    private static StickerLibraryDialog stickerLibraryDialog;
+
+    // Snaps the tool row back to Brush after a sticker placement is
+    // confirmed or cancelled - sticker mode has no button of its own in that
+    // row (it's entered via the "Stickers" library instead), so leaving it
+    // active with no pending sticker would be a dead end for the user.
+    private static void resetToolToBrush() {
+        setBrushMode(ToolBar.TOOL_BRUSH);
+        canvas.setBrushMode(ToolBar.TOOL_BRUSH);
+        toolBar.forceSelectTool(ToolBar.TOOL_BRUSH);
+    }
 
     public static void main(String[] args) {
 
@@ -23,6 +36,8 @@ public class App {
 
         canvas = new MyCanvas();
         canvas.setBrushMode(1);
+        canvas.setFocusable(true);
+        stickerLibrary = new StickerLibrary();
 
         window = new JFrame("PaintSticker");
 
@@ -40,6 +55,12 @@ public class App {
             }
 
             @Override
+            public void onRedo() {
+                canvas.redoAction();
+                canvas.repaint();
+            }
+
+            @Override
             public void onColorChosen(Color color) {
                 selectedColor = color;
                 canvas.setColorChosen(color);
@@ -48,24 +69,34 @@ public class App {
             @Override
             public void onImageSetupRequested() {
                 CanvasSettingsDialog dialog = new CanvasSettingsDialog(
-                        window, canvas.getWidth(), canvas.getHeight(), canvas.getBackground());
-                JCheckBox transparentBox = new JCheckBox("Transparent Background");
-                dialog.add(transparentBox, BorderLayout.SOUTH);
-                dialog.pack();
+                        window, canvas.getWidth(), canvas.getHeight(), canvas.getBackgroundColor());
                 dialog.setVisible(true);
 
                 if (dialog.isApproved()) {
                     Color colorChosen = dialog.getSelectedColor();
                     int width = dialog.getCanvasWidth();
                     int height = dialog.getCanvasHeight();
-                    if (transparentBox.isSelected()) {
-                        colorChosen = new Color(0, 0, 0, 0); // Fully transparent
-                    }
                     toolBar.setImageSetupSwatch(colorChosen);
                     canvas.setBackgroundColor(colorChosen);
                     canvas.setCanvasSize(width, height);
                     window.pack();
                 }
+            }
+
+            @Override
+            public void onStickerLibraryRequested() {
+                if (stickerLibraryDialog == null) {
+                    stickerLibraryDialog = new StickerLibraryDialog(window, stickerLibrary, image -> {
+                        setBrushMode(ToolBar.TOOL_STICKER);
+                        canvas.setBrushMode(ToolBar.TOOL_STICKER);
+                        canvas.beginStickerPlacement(image);
+                        canvas.requestFocusInWindow();
+                    });
+                } else {
+                    stickerLibraryDialog.refresh();
+                }
+                stickerLibraryDialog.setVisible(true);
+                stickerLibraryDialog.toFront();
             }
 
             @Override
@@ -80,6 +111,7 @@ public class App {
             public void onNewImage() {
                 canvas.clearAll();
                 canvas.importImage();
+                if (layersDialog != null) layersDialog.refresh();
             }
 
             @Override
@@ -96,6 +128,17 @@ public class App {
                             applyLayout(layout);
                         });
                 settingsDialog.setVisible(true);
+            }
+
+            @Override
+            public void onLayersRequested() {
+                if (layersDialog == null) {
+                    layersDialog = new LayersDialog(window, canvas);
+                } else {
+                    layersDialog.refresh();
+                }
+                layersDialog.setVisible(true);
+                layersDialog.toFront();
             }
         });
 
@@ -141,7 +184,23 @@ public class App {
 
             @Override
             public void mousePressed(MouseEvent e){
+                canvas.requestFocusInWindow();
                 Point imgPt = canvas.toImageCoords(e.getPoint());
+                if (getBrushMode() == ToolBar.TOOL_STICKER) {
+                    if (canvas.isStickerAwaitingAnchor()) {
+                        canvas.anchorStickerAt(imgPt);
+                    } else if (canvas.isStickerAnchored()) {
+                        if (canvas.isPointOnStickerHandle(imgPt)) {
+                            canvas.beginStickerResize();
+                        } else if (canvas.isPointInsideSticker(imgPt)) {
+                            canvas.beginStickerMove(imgPt);
+                        } else {
+                            canvas.confirmStickerPlacement();
+                            resetToolToBrush();
+                        }
+                    }
+                    return;
+                }
                 if (getBrushMode() == 3) {
                     if (activeTextField != null) {
                         return;
@@ -187,7 +246,20 @@ public class App {
                     drawingLine = false;
                     lineStart = null;
                 }
+                if (getBrushMode() == ToolBar.TOOL_STICKER) {
+                    canvas.endStickerDrag();
+                }
                 canvas.repaint();
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (getBrushMode() == ToolBar.TOOL_STICKER && e.getClickCount() == 2
+                        && canvas.isStickerAnchored()
+                        && canvas.isPointInsideSticker(canvas.toImageCoords(e.getPoint()))) {
+                    canvas.confirmStickerPlacement();
+                    resetToolToBrush();
+                }
             }
         });
 
@@ -197,7 +269,13 @@ public class App {
             public void mouseDragged(MouseEvent e){
                 Point imgPt = canvas.toImageCoords(e.getPoint());
                 statusBar.setCoordinates(imgPt.x, imgPt.y);
-                if (getBrushMode() == 4) {
+                if (getBrushMode() == ToolBar.TOOL_STICKER) {
+                    if (canvas.isStickerResizeDragging()) {
+                        canvas.resizeStickerTo(imgPt);
+                    } else if (canvas.isStickerMoveDragging()) {
+                        canvas.moveStickerTo(imgPt);
+                    }
+                } else if (getBrushMode() == 4) {
                     // Update preview line to follow the cursor
                     canvas.setLinePreview(canvas.getLinePreviewStart(), imgPt, selectedColor, brushSizeSelected);
                 } else {
@@ -209,6 +287,23 @@ public class App {
             public void mouseMoved(MouseEvent e) {
                 Point p = canvas.toImageCoords(e.getPoint());
                 statusBar.setCoordinates(p.x, p.y);
+                if (getBrushMode() == ToolBar.TOOL_STICKER && canvas.isStickerAwaitingAnchor()) {
+                    canvas.updateStickerPreviewPosition(p);
+                }
+            }
+        });
+
+        canvas.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (getBrushMode() != ToolBar.TOOL_STICKER) return;
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && canvas.isStickerAnchored()) {
+                    canvas.confirmStickerPlacement();
+                    resetToolToBrush();
+                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    canvas.cancelStickerPlacement();
+                    resetToolToBrush();
+                }
             }
         });
     }
